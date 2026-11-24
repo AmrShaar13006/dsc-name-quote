@@ -465,6 +465,14 @@ test('الدفعة الثامنة عشرة: العلاء بن الحضرمي و�
   }
 });
 
+test('الدفعة التاسعة عشرة: راشد ونايف ومبارك حكّام غير دينيين', () => {
+  for (const [name, frag] of [['راشد', 'آل مكتوم'], ['نايف', 'عبدالعزيز'], ['مبارك', 'الصباح']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
