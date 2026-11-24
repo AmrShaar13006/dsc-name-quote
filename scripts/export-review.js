@@ -60,11 +60,13 @@ writeFileSync(aOut, aLines.join('\n') + '\n');
 console.log(`✅ ${allAttributes.length} صفة ← ${aOut}`);
 
 // ورقة «الشخصيات التاريخية»: مطابقة تامة للاسم القانوني، الحالة مقترح/معتمد/مستبعد
-const fHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'العصر', 'الميلاد', 'الوفاة', 'المجال', 'السيرة', 'المساهمة', 'الرابط', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+// شخصية دينية لا تُعرض لها صورة أبدًا (سياسة ثابتة)؛ غيرها يجوز لها صورة موثقة من ويكيميديا كومنز فقط
+const fHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'العصر', 'الميلاد', 'الوفاة', 'المجال', 'السيرة', 'المساهمة', 'الرابط', 'شخصية دينية', 'الصورة', 'مصدر الصورة', 'ترخيص الصورة', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
 const fLines = [fHeader.join(',')];
 for (const x of allFigures) {
   fLines.push([
-    x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url, x.status, x.note ?? '', '',
+    x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url,
+    x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '', '',
   ].map(q).join(','));
 }
 const fOut = join(root, 'review', 'figures-review.csv');

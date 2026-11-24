@@ -207,6 +207,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
         <button class="btn btn-quiet" id="another" type="button">بيت آخر</button>
       </div>
       <dl class="facts" id="facts"></dl>
+      <a class="cross" id="figures-link" href="#" hidden>شخصيات تاريخية تحمل اسمك ←</a>
     </div>
   </section>
 
@@ -466,17 +467,14 @@ async function render() {
   }
   rows.push(['البيت', `<span class="verse">${esc(q.first)}<br>${esc(q.second)}</span>`]);
   rows.push(['الشاعر', `<span class="attr">${esc(q.author)} · <a href="${esc(q.url)}" target="_blank" rel="noopener">القصيدة في ويكي مصدر</a></span>`]);
-  const figures = E.figuresFor(r);
-  if (figures.length) {
-    rows.push(['شخصيات تاريخية تحمل اسمك', figures.map((f) => `
-      <span class="figure">
-        <strong>${esc(f.full_name)}</strong>
-        ${f.era ? `<span class="note">${esc(f.era)}</span>` : ''}
-        <span class="bio">${esc(f.bio)}</span>
-        <a href="${esc(f.url)}" target="_blank" rel="noopener">المصدر</a>
-      </span>`).join('')]);
-  }
   $('facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+
+  // شخصيات تاريخية تحمل اسمك: صفحة مستقلة (ليست مزدحمة في البطاقة)، والاسم يُمرَّر في جزء الرابط (#) لا عبر معامل الطلب،
+  // فلا يصل إلى سجلّات الخادم ويبقى صادقًا مع وعد «يُقرأ اسمك على جهازك فقط»
+  const figuresLink = $('figures-link');
+  const hasFigures = E.figuresFor(r).length > 0;
+  figuresLink.hidden = !hasFigures;
+  if (hasFigures) figuresLink.href = 'figures.html#n=' + encodeURIComponent(r.canonical);
 
   $('card').setAttribute('aria-label', `بطاقة «${name}»${meaning ? `: ${meaning}` : ''}. ${q.first}، ${q.second}. ${q.author}.`);
 

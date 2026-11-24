@@ -45,7 +45,8 @@ const HEADER_ALIASES = {
   الصفة: 'attribute', 'نوع العلاقة': 'relation', التعليل: 'justification', المصدر: 'source',
   // ورقة «الشخصيات التاريخية»
   'الاسم الكامل': 'full_name', العصر: 'era', الميلاد: 'birth', الوفاة: 'death', المجال: 'field',
-  السيرة: 'bio', المساهمة: 'contribution',
+  السيرة: 'bio', المساهمة: 'contribution', 'شخصية دينية': 'religious', الصورة: 'image',
+  'مصدر الصورة': 'image_credit', 'ترخيص الصورة': 'image_license',
 };
 
 export const QUOTE_STATUS = ['مقترح', 'معتمد', 'مستبعد'];
@@ -160,10 +161,12 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   const attributes = allAttributes.filter((a) => a.status !== 'مستبعد').map(({ status, note, ...a }) => a);
 
   // «شخصيات تاريخية تحمل اسمك»: مطابقة تامة للاسم القانوني، لا للجذر أو الموضوع
+  const YES_NO = ['نعم', 'لا'];
   const allFigures = readCsv(figuresFile).map((f, i) => {
     const e = {
       id: f.id, name: f.name, full_name: f.full_name, era: f.era || null, birth: f.birth || null, death: f.death || null,
       field: f.field || null, bio: f.bio, contribution: f.contribution || null, url: f.url,
+      religious: f.religious, image: f.image || null, image_credit: f.image_credit || null, image_license: f.image_license || null,
       status: f.status || 'مقترح', note: f.review_note || null,
     };
     const where = `figures.csv سطر ${i + 2} (${e.id})`;
@@ -172,6 +175,16 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (!e.full_name) errors.push(`${where}: الاسم الكامل مطلوب`);
     if (!e.bio) errors.push(`${where}: السيرة مطلوبة`);
     if (!e.url) errors.push(`${where}: الرابط مطلوب`);
+    if (!YES_NO.includes(e.religious)) errors.push(`${where}: «شخصية دينية» يجب أن تكون نعم/لا`);
+    // سياسة ثابتة: شخصية دينية لا تُعرض لها صورة أبدًا، ولو كانت رسمة فنية — لا استثناء
+    if (e.religious === 'نعم' && (e.image || e.image_credit || e.image_license)) {
+      errors.push(`${where}: شخصية دينية لا يجوز أن يكون لها صورة بأي حال — أفرغ image/image_credit/image_license`);
+    }
+    if (e.religious === 'لا' && e.image) {
+      if (!e.image_credit) errors.push(`${where}: الصورة بلا مصدر (image_credit) مطلوب`);
+      if (!e.image_license) errors.push(`${where}: الصورة بلا ترخيص (image_license) مطلوب`);
+      if (!/^https:\/\/upload\.wikimedia\.org\//.test(e.image)) errors.push(`${where}: الصورة يجب أن تكون ملفًا من ويكيميديا كومنز (upload.wikimedia.org)، لا رابطًا آخر ولا صورة مولَّدة بالذكاء الاصطناعي`);
+    }
     if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
     return e;
   });

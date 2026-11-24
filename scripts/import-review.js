@@ -47,9 +47,12 @@ export function toCanonicalAttributesCsv(list) {
 }
 
 export function toCanonicalFiguresCsv(list) {
-  const lines = ['id,name,full_name,era,birth,death,field,bio,contribution,url,status,review_note'];
+  const lines = ['id,name,full_name,era,birth,death,field,bio,contribution,url,religious,image,image_credit,image_license,status,review_note'];
   for (const x of list) {
-    lines.push([x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url, x.status, x.note ?? ''].map(q).join(','));
+    lines.push([
+      x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url,
+      x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '',
+    ].map(q).join(','));
   }
   return lines.join('\n') + '\n';
 }

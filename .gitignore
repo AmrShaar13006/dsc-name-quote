@@ -11,6 +11,7 @@ ui/test.html
 ui/qr.svg
 ui/game-qr.svg
 ui/game.html
+ui/figures.html
 
 # ملفات النظام والمحررات
 .DS_Store
