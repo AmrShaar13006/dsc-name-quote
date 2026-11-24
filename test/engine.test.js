@@ -266,7 +266,7 @@ test('شخصيات تاريخية تحمل اسمك: مطابقة تامة لل�
   const hassan = E.figuresFor(R('حسان'));
   assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
   assert.deepEqual(E.figuresFor(R('حسن')), []); // حسن لا يطابق حسان
-  assert.deepEqual(E.figuresFor(R('سعد')), []); // لا شخصية مرتبطة به في Phase A
+  assert.deepEqual(E.figuresFor(R('خليل')), []); // لا شخصية مرتبطة به في Phase A
   for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
 });
 
