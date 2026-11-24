@@ -278,6 +278,20 @@ test('شخصيات غير دينية يجوز لها صورة لاحقًا، و�
   assert.ok(ibnBattuta && ibnBattuta.religious === 'لا' && !ibnBattuta.image);
 });
 
+test('الدفعة الثانية من الشخصيات: مالك وسلمان وبلال دينيون، طارق ويوسف وإبراهيم غير دينيين', () => {
+  for (const [name, frag] of [['مالك', 'بن أنس'], ['سلمان', 'الفارسي'], ['بلال', 'بن رباح']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+  for (const [name, frag] of [['طارق', 'بن زياد'], ['يوسف', 'تاشفين'], ['إبراهيم', 'الموصلي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
