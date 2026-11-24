@@ -488,6 +488,12 @@ test('الدفعة الحادية والعشرون: غازي وفيصل الأو
   assert.ok(faisalFigures.every((f) => f.religious === 'لا'));
 });
 
+test('الدفعة الثانية والعشرون: زينب بنت علي دينية', () => {
+  const zainab = E.figuresFor(R('زينب')).find((f) => f.full_name.includes('بنت علي'));
+  assert.ok(zainab);
+  assert.equal(zainab.religious, 'نعم');
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
