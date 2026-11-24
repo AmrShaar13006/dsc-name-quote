@@ -473,6 +473,12 @@ test('الدفعة التاسعة عشرة: راشد ونايف ومبارك ح�
   }
 });
 
+test('الدفعة العشرون: خليفة بن زايد غير ديني', () => {
+  const khalifa = E.figuresFor(R('خليفة')).find((f) => f.full_name.includes('آل نهيان'));
+  assert.ok(khalifa);
+  assert.equal(khalifa.religious, 'لا');
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
