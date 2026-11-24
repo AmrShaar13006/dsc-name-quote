@@ -265,7 +265,7 @@ test('ما يستوحيه الاسم من صفات: مطابقة تامة على
 test('شخصيات تاريخية تحمل اسمك: مطابقة تامة للاسم، لا للجذر أو الاسم المشابه', () => {
   const hassan = E.figuresFor(R('حسان'));
   assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
-  assert.deepEqual(E.figuresFor(R('حسن')), []); // حسن لا يطابق حسان
+  assert.deepEqual(E.figuresFor(R('نبيل')), []); // حسن (المطابق لآخرين) لا يطابق حسان، ونبيل بلا شخصية هنا
   assert.deepEqual(E.figuresFor(R('خليل')), []); // لا شخصية مرتبطة به في Phase A
   for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
 });
@@ -304,6 +304,21 @@ test('الدفعة الثالثة: ملوك ووزراء غير دينيين، �
   assert.ok(omarFigures.every((f) => f.religious === 'نعم')); // كلا شخصيتي عمر خليفتان دينيًا
   for (const name of ['عبدالعزيز', 'خالد', 'أحمد', 'محمد', 'عمر', 'فيصل']) {
     assert.ok(E.figuresFor(R(name)).length <= 3, name); // الحد الأقصى 3 شخصيات لكل اسم
+  }
+});
+
+test('الدفعة الخامسة: زيد وأسامة والحسنان دينيون، يحيى والوليد غير دينيين', () => {
+  assert.equal(E.figuresFor(R('زيد')).length, 2); // زيد بن ثابت وزيد بن حارثة
+  for (const [name, frag] of [['زيد', 'بن حارثة'], ['أسامة', 'بن زيد'], ['حسن', 'بن علي'], ['حسين', 'بن علي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+  for (const [name, frag] of [['يحيى', 'البرمكي'], ['وليد', 'عبدالملك']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
   }
 });
 
