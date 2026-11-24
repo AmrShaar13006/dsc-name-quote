@@ -368,6 +368,15 @@ test('الدفعة التاسعة: شعراء حداثيون، وخالد وسع
   assert.equal(E.figuresFor(R('سعود')).length, 2);
 });
 
+test('الدفعة العاشرة: معاذ بن جبل ديني، وإبراهيم بن الأغلب شخصية ثانية غير دينية لإبراهيم', () => {
+  const muadh = E.figuresFor(R('معاذ')).find((f) => f.full_name.includes('بن جبل'));
+  assert.ok(muadh);
+  assert.equal(muadh.religious, 'نعم');
+  const ibrahimFigures = E.figuresFor(R('إبراهيم'));
+  assert.equal(ibrahimFigures.length, 2);
+  assert.ok(ibrahimFigures.every((f) => f.religious === 'لا'));
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
