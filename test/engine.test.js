@@ -335,6 +335,17 @@ test('الدفعة السادسة: يزيد والقاسم وعمار دينيو
   }
 });
 
+test('الدفعة السابعة: شعراء غير دينيين، وأحمد يبلغ الحد الأقصى 3 شخصيات', () => {
+  for (const [name, frag] of [['بشار', 'بن برد'], ['جميل', 'بثينة'], ['حاتم', 'الطائي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  const ahmadFigures = E.figuresFor(R('أحمد'));
+  assert.equal(ahmadFigures.length, 3);
+  assert.ok(ahmadFigures.some((f) => f.full_name.includes('المتنبي')));
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
