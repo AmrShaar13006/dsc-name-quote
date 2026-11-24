@@ -448,6 +448,15 @@ test('الدفعة السادسة عشرة: سلمى وأروى ومي غير د
   }
 });
 
+test('الدفعة السابعة عشرة: عمرو وعامر وسالم وصفوان كلهم دينيون (صحابة وتابعي)', () => {
+  for (const [name, frag] of [['عمرو', 'بن العاص'], ['عامر', 'بن فهيرة'], ['سالم', 'بن عبدالله'], ['صفوان', 'بن أمية']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
