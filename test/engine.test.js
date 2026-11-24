@@ -457,6 +457,14 @@ test('الدفعة السابعة عشرة: عمرو وعامر وسالم وص�
   }
 });
 
+test('الدفعة الثامنة عشرة: العلاء بن الحضرمي وحكيم بن حزام دينيان', () => {
+  for (const [name, frag] of [['علاء', 'الحضرمي'], ['حكيم', 'بن حزام']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
