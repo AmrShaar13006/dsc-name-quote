@@ -50,6 +50,7 @@ const HEADER_ALIASES = {
 };
 
 export const QUOTE_STATUS = ['مقترح', 'معتمد', 'مستبعد'];
+export const ATTRIBUTE_RELATIONS = ['مباشر', 'مرتبط', 'ثقافي', 'تأويل أدبي'];
 export const MIN_QUOTES_PER_THEME = 4;
 const DIACRITIC_GLITCH = /([ً-ْ])\1|(^|\s)و\s|اَ/;
 
@@ -149,6 +150,7 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (!validTargets.has(normalize(e.name).replace(/\s/g, ''))) errors.push(`${where}: الاسم «${e.name}» غير موجود في القاموس أو مركّبات أسماء الله`);
     if (!e.attribute) errors.push(`${where}: الصفة فارغة`);
     if (!e.justification) errors.push(`${where}: التعليل مطلوب`);
+    if (!ATTRIBUTE_RELATIONS.includes(e.relation)) errors.push(`${where}: نوع العلاقة يجب أن يكون ${ATTRIBUTE_RELATIONS.join('/')}`);
     if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
     return e;
   });
@@ -159,6 +161,23 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     attrSeen.set(k, true);
   }
   const attributes = allAttributes.filter((a) => a.status !== 'مستبعد').map(({ status, note, ...a }) => a);
+
+  // حارس ضد القولبة: نفس مجموعة الصفات (بالضبط) على أكثر من 3 أسماء يعني أننا نكرر نمطًا عامًا
+  // بدل اشتقاق صفات من معنى كل اسم على حدة (قاعدة المَهمّة: لا نضع صفات عامة مُطمئنة لمجرد أنها تبدو جذابة)
+  const setsByName = new Map();
+  for (const a of attributes) {
+    if (!setsByName.has(a.name)) setsByName.set(a.name, []);
+    setsByName.get(a.name).push(a.attribute);
+  }
+  const namesBySet = new Map();
+  for (const [name, attrs] of setsByName) {
+    const key = [...attrs].sort().join('|');
+    if (!namesBySet.has(key)) namesBySet.set(key, []);
+    namesBySet.get(key).push(name);
+  }
+  for (const [key, names] of namesBySet) {
+    if (names.length > 3) errors.push(`attributes.csv: مجموعة الصفات «${key}» مطابقة حرفيًا على ${names.length} أسماء (${names.join('، ')}) — راجع كل اسم على حدة بدل تعميم نمط واحد`);
+  }
 
   // «شخصيات تاريخية تحمل اسمك»: مطابقة تامة للاسم القانوني، لا للجذر أو الموضوع
   const YES_NO = ['نعم', 'لا'];
