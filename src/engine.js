@@ -316,6 +316,30 @@ export function createEngine(data) {
     return sorted[(hash(key) + offset) % sorted.length];
   }
 
+  // «ما يستوحيه الاسم من صفات» و«شخصيات تاريخية تحمل اسمك»: مطابقة تامة على الاسم القانوني (canonical) فقط،
+  // لا على الجذر أو الموضوع، فحسّان لا يطابق حسن ولا يرث صفات غيره من المشتقّات
+  const attrKey = (name) => normalize(name).replace(/\s/g, '');
+  const attributesByName = new Map();
+  for (const a of data.attributes || []) {
+    const k = attrKey(a.name);
+    if (!attributesByName.has(k)) attributesByName.set(k, []);
+    attributesByName.get(k).push(a);
+  }
+  const figuresByName = new Map();
+  for (const f of data.figures || []) {
+    const k = attrKey(f.name);
+    if (!figuresByName.has(k)) figuresByName.set(k, []);
+    figuresByName.get(k).push(f);
+  }
+  function attributesFor(result) {
+    if (!result.canonical) return [];
+    return (attributesByName.get(attrKey(result.canonical)) || []).map((a) => a.attribute);
+  }
+  function figuresFor(result) {
+    if (!result.canonical) return [];
+    return figuresByName.get(attrKey(result.canonical)) || [];
+  }
+
   const quotesByTheme = new Map();
   for (const q of data.quotes || []) {
     for (const t of q.themes) {
@@ -329,5 +353,5 @@ export function createEngine(data) {
     return pickQuote(result, quotesByTheme.get(themeId), themeId, offset);
   }
 
-  return { resolve, pickQuote, quoteFor, quotesByTheme, lookup, findRoot, themes, isBlocked };
+  return { resolve, pickQuote, quoteFor, quotesByTheme, lookup, findRoot, themes, isBlocked, attributesFor, figuresFor };
 }

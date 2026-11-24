@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { loadData } from './build.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { data, allQuotes, allMachine, errors } = loadData();
+const { data, allQuotes, allMachine, allAttributes, allFigures, errors } = loadData();
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
 const label = new Map(data.themes.map((t) => [t.id, t.label]));
@@ -48,3 +48,25 @@ for (const x of allMachine) {
 const mOut = join(root, 'review', 'machine-review.csv');
 writeFileSync(mOut, mLines.join('\n') + '\n');
 console.log(`✅ ${allMachine.length} بيتًا للآلة ← ${mOut}`);
+
+// ورقة «الصفات» (ما يستوحيه الاسم من صفات): تأويل أدبي من المعنى، الحالة مقترح/معتمد/مستبعد
+const aHeader = ['الاسم', 'الصفة', 'نوع العلاقة', 'التعليل', 'المصدر', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const aLines = [aHeader.join(',')];
+for (const x of allAttributes) {
+  aLines.push([x.name, x.attribute, x.relation ?? '', x.justification ?? '', x.source ?? '', x.status, x.note ?? '', ''].map(q).join(','));
+}
+const aOut = join(root, 'review', 'attributes-review.csv');
+writeFileSync(aOut, aLines.join('\n') + '\n');
+console.log(`✅ ${allAttributes.length} صفة ← ${aOut}`);
+
+// ورقة «الشخصيات التاريخية»: مطابقة تامة للاسم القانوني، الحالة مقترح/معتمد/مستبعد
+const fHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'العصر', 'الميلاد', 'الوفاة', 'المجال', 'السيرة', 'المساهمة', 'الرابط', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const fLines = [fHeader.join(',')];
+for (const x of allFigures) {
+  fLines.push([
+    x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url, x.status, x.note ?? '', '',
+  ].map(q).join(','));
+}
+const fOut = join(root, 'review', 'figures-review.csv');
+writeFileSync(fOut, fLines.join('\n') + '\n');
+console.log(`✅ ${allFigures.length} شخصية تاريخية ← ${fOut}`);

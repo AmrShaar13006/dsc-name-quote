@@ -201,9 +201,14 @@ test('الاستيراد يرفض موضوعًا مكتوبًا خطأ ويذك�
   const { writeFileSync, mkdtempSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const f = join(mkdtempSync(join(tmpdir(), 'nq-')), 'bad.csv');
+  const dir = mkdtempSync(join(tmpdir(), 'nq-'));
+  const f = join(dir, 'bad.csv');
   writeFileSync(f, 'الاسم,المعنى,المواضيع,الجذر,الثقة,الجنس\nسعد,اليُمن,السعاده,س-ع-د,عالية,ذكر\n');
-  const { errors } = loadData({ namesFile: f });
+  const af = join(dir, 'empty-attrs.csv');
+  writeFileSync(af, 'name,attribute,relation,justification,source,status\n');
+  const ff = join(dir, 'empty-figures.csv');
+  writeFileSync(ff, 'id,name,full_name,era,birth,death,field,bio,contribution,url,status\n');
+  const { errors } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff });
   assert.equal(errors.length, 1);
   assert.match(errors[0], /سطر 2.*السعاده/);
 });
@@ -244,4 +249,29 @@ test('الأسماء المضافة بعد البحث: المعنى المعرو
   assert.match(R('بلال').meaning, /الندى/);
   assert.match(R('تركي').meaning, /الدولة السعودية الثانية/);
   assert.match(R('هديل').meaning, /الحمام/);
+});
+
+test('ما يستوحيه الاسم من صفات: مطابقة تامة على الاسم القانوني، لا على الجذر', () => {
+  const liath = E.attributesFor(R('ليث'));
+  assert.ok(liath.includes('الشجاعة'));
+  const saeed = E.attributesFor(R('سعيد'));
+  const musaed = E.attributesFor(R('مساعد'));
+  assert.ok(saeed.includes('السعادة'));
+  assert.ok(musaed.includes('التعاون'));
+  assert.deepEqual(saeed.filter((a) => musaed.includes(a)), []); // جذر مشترك س-ع-د لكن صفات مختلفة
+  assert.deepEqual(E.attributesFor(R('اسم غير موجود أصلًا')), []);
+});
+
+test('شخصيات تاريخية تحمل اسمك: مطابقة تامة للاسم، لا للجذر أو الاسم المشابه', () => {
+  const hassan = E.figuresFor(R('حسان'));
+  assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
+  assert.deepEqual(E.figuresFor(R('حسن')), []); // حسن لا يطابق حسان
+  assert.deepEqual(E.figuresFor(R('محمد')), []); // لا شخصية مرتبطة به في Phase A
+  for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
+});
+
+test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
+  const abdalaziz = E.attributesFor(R('عبدالعزيز'));
+  assert.ok(abdalaziz.includes('الكرامة'));
+  assert.ok(abdalaziz.includes('عزة النفس'));
 });

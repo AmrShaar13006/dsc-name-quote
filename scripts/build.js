@@ -41,6 +41,11 @@ const HEADER_ALIASES = {
   الشاعر: 'author', الرابط: 'url', 'تصنيف الديوان': 'topic', القصيدة: 'topic',
   // ورقة «أبيات الآلة»
   المعرّف: 'id', البحر: 'meter', النموذج: 'model',
+  // ورقة «الصفات»
+  الصفة: 'attribute', 'نوع العلاقة': 'relation', التعليل: 'justification', المصدر: 'source',
+  // ورقة «الشخصيات التاريخية»
+  'الاسم الكامل': 'full_name', العصر: 'era', الميلاد: 'birth', الوفاة: 'death', المجال: 'field',
+  السيرة: 'bio', المساهمة: 'contribution',
 };
 
 export const QUOTE_STATUS = ['مقترح', 'معتمد', 'مستبعد'];
@@ -58,7 +63,7 @@ function readCsv(file) {
 let THEME_LABELS = new Map();
 const split = (s) => (s ? s.split(/[|+،]/).map((x) => x.trim()).filter(Boolean).map((x) => THEME_LABELS.get(x) || x) : []);
 
-export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', blockedFile = 'blocked.csv', machineFile = 'machine.csv' } = {}) {
+export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', blockedFile = 'blocked.csv', machineFile = 'machine.csv', attributesFile = 'attributes.csv', figuresFile = 'figures.csv' } = {}) {
   const errors = [];
   const warnings = [];
 
@@ -126,6 +131,53 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     checkThemes(`divine.csv سطر ${i + 2} (${e.name})`, e.themes);
     return e;
   });
+
+  // الأسماء التي يصح أن تُنسب إليها صفة أو شخصية تاريخية: الاسم القانوني وصيغه في القاموس،
+  // ومركّبات «عبد + اسم من أسماء الله» (مطابقة لما يُرجعه resolve في src/engine.js)
+  const validTargets = new Set();
+  for (const n of names) for (const k of [n.name, ...n.variants].map(normalize)) validTargets.add(k.replace(/\s/g, ''));
+  for (const d of divine) validTargets.add(normalize('عبد' + d.name).replace(/\s/g, ''));
+
+  // «ما يستوحيه الاسم من صفات»: تأويل أدبي من المعنى المراجَع، لا حكم على شخصية حامل الاسم
+  const allAttributes = readCsv(attributesFile).map((a, i) => {
+    const e = {
+      name: a.name, attribute: a.attribute, relation: a.relation || null, justification: a.justification || null,
+      source: a.source || null, status: a.status || 'مقترح', note: a.review_note || null,
+    };
+    const where = `attributes.csv سطر ${i + 2} (${e.name} ← ${e.attribute})`;
+    if (!validTargets.has(normalize(e.name).replace(/\s/g, ''))) errors.push(`${where}: الاسم «${e.name}» غير موجود في القاموس أو مركّبات أسماء الله`);
+    if (!e.attribute) errors.push(`${where}: الصفة فارغة`);
+    if (!e.justification) errors.push(`${where}: التعليل مطلوب`);
+    if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
+    return e;
+  });
+  const attrSeen = new Map();
+  for (const a of allAttributes) {
+    const k = normalize(a.name).replace(/\s/g, '') + '|' + normalize(a.attribute);
+    if (attrSeen.has(k)) errors.push(`attributes.csv: «${a.attribute}» مكررة لاسم «${a.name}»`);
+    attrSeen.set(k, true);
+  }
+  const attributes = allAttributes.filter((a) => a.status !== 'مستبعد').map(({ status, note, ...a }) => a);
+
+  // «شخصيات تاريخية تحمل اسمك»: مطابقة تامة للاسم القانوني، لا للجذر أو الموضوع
+  const allFigures = readCsv(figuresFile).map((f, i) => {
+    const e = {
+      id: f.id, name: f.name, full_name: f.full_name, era: f.era || null, birth: f.birth || null, death: f.death || null,
+      field: f.field || null, bio: f.bio, contribution: f.contribution || null, url: f.url,
+      status: f.status || 'مقترح', note: f.review_note || null,
+    };
+    const where = `figures.csv سطر ${i + 2} (${e.id})`;
+    if (!/^f\d+$/.test(e.id || '')) errors.push(`${where}: المعرّف يجب أن يكون f ثم رقم`);
+    if (!validTargets.has(normalize(e.name).replace(/\s/g, ''))) errors.push(`${where}: الاسم «${e.name}» غير موجود في القاموس أو مركّبات أسماء الله`);
+    if (!e.full_name) errors.push(`${where}: الاسم الكامل مطلوب`);
+    if (!e.bio) errors.push(`${where}: السيرة مطلوبة`);
+    if (!e.url) errors.push(`${where}: الرابط مطلوب`);
+    if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
+    return e;
+  });
+  const fids = new Set();
+  for (const f of allFigures) { if (fids.has(f.id)) errors.push(`figures.csv: المعرّف ${f.id} مكرر`); fids.add(f.id); }
+  const figures = allFigures.filter((f) => f.status !== 'مستبعد').map(({ status, note, ...f }) => f);
 
   // جذور مستخدمة في القاموس وغير موجودة في جدول الجذور (تنبيه فقط)
   for (const n of names) {
@@ -206,7 +258,7 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   for (const m of allMachine) { if (mids.has(m.id)) errors.push(`machine.csv: المعرّف ${m.id} مكرر`); mids.add(m.id); }
   const machine = allMachine.filter((m) => m.status !== 'مستبعد').map(({ status, note, ...m }) => m);
 
-  return { data: { themes, names, roots, divine, quotes, blocked, machine }, allQuotes, allMachine, errors, warnings };
+  return { data: { themes, names, roots, divine, quotes, blocked, machine, attributes, figures }, allQuotes, allMachine, allAttributes, allFigures, errors, warnings };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -218,7 +270,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const uniqWarn = [...new Set(warnings)];
   writeFileSync(join(root, 'data', 'bundle.json'), JSON.stringify(data, null, 1));
   writeFileSync(join(root, 'src', 'data.js'), '// مولَّد تلقائيًا من data/*.csv — لا تعدّله يدويًا\nexport default ' + JSON.stringify(data) + ';\n');
-  console.log(`✅ ${data.names.length} اسمًا، ${data.roots.length} جذرًا، ${data.divine.length} من أسماء الله، ${data.themes.length} موضوعًا، ${data.quotes.length} اقتباسًا، ${readCsv('blocked.csv').length} كلمة محجوبة، ${data.machine.length} بيتًا للآلة`);
+  console.log(`✅ ${data.names.length} اسمًا، ${data.roots.length} جذرًا، ${data.divine.length} من أسماء الله، ${data.themes.length} موضوعًا، ${data.quotes.length} اقتباسًا، ${readCsv('blocked.csv').length} كلمة محجوبة، ${data.machine.length} بيتًا للآلة، ${data.attributes.length} صفة لـ${new Set(data.attributes.map((a) => a.name)).size} اسمًا، ${data.figures.length} شخصية تاريخية`);
   const qWarn = uniqWarn.filter((w) => w.startsWith('موضوع'));
   for (const w of qWarn) console.log('⚠️  ' + w);
   console.log(`ℹ️  ${uniqWarn.length - qWarn.length} تنبيه (جذور في القاموس غير موجودة في جدول الجذور)`);
