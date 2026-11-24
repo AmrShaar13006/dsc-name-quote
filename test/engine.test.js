@@ -415,6 +415,15 @@ test('الدفعة الثالثة عشرة: صفات بلا تواريخ دقي�
   assert.equal(hashim.religious, 'لا');
 });
 
+test('الدفعة الرابعة عشرة: زايد ومعن غير دينيين، وكل الروابط صحيحة المخطط', () => {
+  for (const [name, frag] of [['زايد', 'آل نهيان'], ['معن', 'بن زائدة']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const f of data.figures) assert.match(f.url, /^https:\/\/[a-z0-9.-]+\//i, f.id);
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));

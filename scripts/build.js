@@ -194,6 +194,11 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (!e.full_name) errors.push(`${where}: الاسم الكامل مطلوب`);
     if (!e.bio) errors.push(`${where}: السيرة مطلوبة`);
     if (!e.url) errors.push(`${where}: الرابط مطلوب`);
+    else {
+      const schemeHost = e.url.split('/').slice(0, 3).join('/');
+      if (!/^https:\/\/[a-z0-9.-]+$/i.test(schemeHost)) errors.push(`${where}: الرابط فيه خطأ مطبعي في المخطط/المضيف (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
+      if (/wikipedia\.org/.test(e.url) && !e.url.includes('/wiki/')) errors.push(`${where}: رابط ويكيبيديا يجب أن يحوي "/wiki/" بأحرف لاتينية (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
+    }
     if (!YES_NO.includes(e.religious)) errors.push(`${where}: «شخصية دينية» يجب أن تكون نعم/لا`);
     // سياسة ثابتة: شخصية دينية لا تُعرض لها صورة أبدًا، ولو كانت رسمة فنية — لا استثناء
     if (e.religious === 'نعم' && (e.image || e.image_credit || e.image_license)) {
