@@ -390,6 +390,17 @@ test('الدفعة الحادية عشرة: رؤساء وملوك حديثون �
   }
 });
 
+test('الدفعة الثانية عشرة: رياض الصلح وطاهر بن الحسين غير دينيين، عاصم بن ثابت ديني', () => {
+  for (const [name, frag] of [['رياض', 'الصلح'], ['طاهر', 'بن الحسين']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  const asim = E.figuresFor(R('عاصم')).find((f) => f.full_name.includes('بن ثابت'));
+  assert.ok(asim);
+  assert.equal(asim.religious, 'نعم');
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
