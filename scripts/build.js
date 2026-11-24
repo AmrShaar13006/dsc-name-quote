@@ -210,6 +210,9 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   const fids = new Set();
   for (const f of allFigures) { if (fids.has(f.id)) errors.push(`figures.csv: المعرّف ${f.id} مكرر`); fids.add(f.id); }
   const figures = allFigures.filter((f) => f.status !== 'مستبعد').map(({ status, note, ...f }) => f);
+  const figuresPerName = new Map();
+  for (const f of figures) figuresPerName.set(f.name, (figuresPerName.get(f.name) || 0) + 1);
+  for (const [name, n] of figuresPerName) if (n > 3) errors.push(`figures.csv: «${name}» له ${n} شخصيات، والحد الأقصى 3`);
 
   // جذور مستخدمة في القاموس وغير موجودة في جدول الجذور (تنبيه فقط)
   for (const n of names) {

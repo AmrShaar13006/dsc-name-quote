@@ -292,6 +292,21 @@ test('الدفعة الثانية من الشخصيات: مالك وسلمان �
   }
 });
 
+test('الدفعة الثالثة: ملوك ووزراء غير دينيين، وعمر بن عبدالعزيز ديني رغم أنه ثاني شخصية باسم عمر', () => {
+  const abdalaziz = E.figuresFor(R('عبدالعزيز'));
+  assert.ok(abdalaziz.some((f) => f.full_name.includes('الملك عبدالعزيز')));
+  const khaledFigures = E.figuresFor(R('خالد'));
+  assert.equal(khaledFigures.length, 2); // خالد بن الوليد (ديني) ثم خالد بن برمك (غير ديني)
+  assert.equal(khaledFigures[0].religious, 'نعم'); // الصحابي أولًا بترتيب الملف
+  assert.equal(khaledFigures[1].religious, 'لا');
+  const omarFigures = E.figuresFor(R('عمر'));
+  assert.equal(omarFigures.length, 2);
+  assert.ok(omarFigures.every((f) => f.religious === 'نعم')); // كلا شخصيتي عمر خليفتان دينيًا
+  for (const name of ['عبدالعزيز', 'خالد', 'أحمد', 'محمد', 'عمر', 'فيصل']) {
+    assert.ok(E.figuresFor(R(name)).length <= 3, name); // الحد الأقصى 3 شخصيات لكل اسم
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
