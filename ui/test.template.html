@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>اختبار من اسمه نصيب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* لوحة نادي علوم البيانات: كريمي/حبري، والجمري إشارة لا سطح. تخطيط: لوحة اختبار اسم واحد ثم اختبار دفعة. */
+:root {
+  --ground: #FAF7F2;
+  --surface: #FFFFFF;
+  --ink: #111111;
+  --text: #1A1A1A;
+  --muted: #6B6B6B;
+  --line: #E3E3E3;
+  --ember: #EB5A33;
+  --ember-dark: #C34521;
+  --ember-wash: #FDF1EC;
+  --s-dict: #127868;
+  --s-comp: #123E5E;
+  --s-root: #E9A13B;
+  --s-choose: #8C3B4A;
+  --s-latin: #92908A;
+  --focus: 0 0 0 3px rgba(235, 90, 51, .35);
+  --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111111; --surface: #1F2023; --ink: #FFFFFF; --text: rgba(255,255,255,.92);
+    --muted: rgba(255,255,255,.62); --line: #2F2E2B; --ember-wash: #2A1C17;
+    --s-comp: #4F7FA6; --s-choose: #C0687A; --focus: 0 0 0 3px rgba(255,255,255,.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111111; --surface: #1F2023; --ink: #FFFFFF; --text: rgba(255,255,255,.92);
+  --muted: rgba(255,255,255,.62); --line: #2F2E2B; --ember-wash: #2A1C17;
+  --s-comp: #4F7FA6; --s-choose: #C0687A; --focus: 0 0 0 3px rgba(255,255,255,.45);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--ground); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; display: grid; gap: 40px; }
+.label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ember); direction: ltr; text-align: right; }
+h1 { margin: 4px 0 6px; font-size: 31px; line-height: 1.2; color: var(--ink); text-wrap: balance; font-weight: 700; }
+h2 { margin: 0; font-size: 20px; color: var(--ink); font-weight: 700; }
+.lede { margin: 0; color: var(--muted); max-width: 60ch; }
+header { display: grid; gap: 2px; }
+
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .bench { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 24px; display: grid; gap: 18px; }
+
+label.field { display: grid; gap: 8px; font-weight: 500; color: var(--ink); }
+input[type="text"], textarea {
+  font: inherit; font-size: 20px; color: var(--ink); background: var(--ground);
+  border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; width: 100%;
+}
+textarea { font-size: 16px; min-height: 220px; resize: vertical; line-height: 1.7; }
+input:focus-visible, textarea:focus-visible, button:focus-visible { outline: none; box-shadow: var(--focus); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font: inherit; font-size: 14px; cursor: pointer; border: 1px solid var(--line); background: var(--ground);
+  color: var(--text); border-radius: 999px; padding: 4px 12px; transition: transform 120ms;
+}
+.chip:hover { transform: translateY(-2px); }
+.chip:active { transform: scale(.98); }
+.chip[aria-pressed="true"] { border-color: var(--ember); background: var(--ember-wash); color: var(--ink); }
+
+.facts { display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; margin: 0; }
+.facts dt { color: var(--muted); font-size: 14px; padding-top: 2px; }
+.facts dd { margin: 0; color: var(--ink); }
+.pill { display: inline-block; font-size: 13px; font-weight: 500; color: #fff; border-radius: 4px; padding: 2px 8px; white-space: nowrap; }
+.p-dictionary { background: var(--s-dict); } .p-compound { background: var(--s-comp); }
+.p-root { background: var(--s-root); color: #111; } .p-choose { background: var(--s-choose); }
+.p-latin { background: var(--s-latin); color: #111; } .p-empty { background: var(--line); color: var(--muted); }
+.p-blocked { background: var(--ink); color: var(--ground); }
+.mono { white-space: nowrap; letter-spacing: .06em; }
+.hint { font-size: 14px; color: var(--muted); margin: 0; }
+.choose { border: 1px dashed var(--s-choose); border-radius: 8px; padding: 14px; display: grid; gap: 10px; }
+.choose[hidden] { display: none; }
+
+/* البطاقة */
+.card-stage { display: grid; gap: 14px; }
+.fonts { display: flex; gap: 8px; flex-wrap: wrap; }
+.card {
+  background: #FAF7F2; color: #111111; border-radius: 12px; border-top: 4px solid var(--ember);
+  box-shadow: 0 6px 20px rgba(17,17,17,.10); padding: 32px 28px 24px; min-height: 380px;
+  display: grid; grid-template-rows: auto auto 1fr auto; gap: 14px; text-align: center;
+  background-image: linear-gradient(rgba(17,17,17,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.card .c-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; color: #EB5A33; direction: ltr; }
+.card .c-name { font-size: 64px; line-height: 1.25; margin: 6px 0 0; overflow-wrap: anywhere; }
+.card .c-meaning { font-size: 17px; color: #1A1A1A; margin: 0 auto; max-width: 34ch; }
+.card .c-quote { align-self: center; font-family: 'Amiri', serif; font-size: 23px; line-height: 1.8; margin: 0; color: #111; display: grid; gap: 2px; }
+.card .c-quote .h1 { justify-self: start; padding-inline-end: 12%; text-wrap: balance; }
+.card .c-quote .h2 { justify-self: end; padding-inline-start: 12%; text-wrap: balance; }
+.card .c-attr { font-family: var(--font-body); font-size: 13px; color: #6B6B6B; margin-top: 8px; display: block; justify-self: center; }
+.card .c-attr a { color: inherit; text-decoration-color: #C4C1BA; text-underline-offset: 3px; }
+.card .c-attr a:hover { color: #111; text-decoration-color: #EB5A33; }
+.quote-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.card .c-foot { display: flex; justify-content: space-between; font-size: 13px; color: #6B6B6B; border-top: 1px solid #E3E3E3; padding-top: 10px; }
+.card.is-empty .c-name { color: #92908A; font-size: 28px; }
+
+/* الدفعة */
+.batch { display: grid; grid-template-columns: minmax(240px, 320px) minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 860px) { .batch { grid-template-columns: 1fr; } }
+.btn {
+  font: inherit; font-weight: 700; cursor: pointer; border: 0; border-radius: 8px; padding: 10px 18px;
+  background: var(--ember); color: #fff; justify-self: start; transition: transform 250ms cubic-bezier(.2,.6,.2,1), box-shadow 250ms;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(235,90,51,.28); background: var(--ember-dark); }
+.btn:active { transform: scale(.98); }
+.summary { display: grid; gap: 12px; }
+.tiles { display: flex; flex-wrap: wrap; gap: 24px; }
+.tile .n { font-size: 31px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.tile .t { font-size: 13px; color: var(--muted); }
+.bar { display: flex; height: 14px; width: 100%; background: var(--line); }
+.bar span { display: block; height: 100%; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; margin-inline-end: 6px; vertical-align: -1px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: right; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--muted); background: var(--ground); position: sticky; top: 0; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--ember-wash); }
+td.nm { font-weight: 700; color: var(--ink); white-space: nowrap; }
+footer { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; gap: 6px 18px; border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div class="label">DSC · Arabic Language Day · Test bench</div>
+    <h1>اختبار «من اسمه نصيب»</h1>
+    <p class="lede">اكتب اسمًا لترى كيف يقرؤه المحرك: من أين جاء معناه، وجذره، وموضوعه، والبطاقة التي سيأخذها الزائر.</p>
+  </header>
+
+  <section class="bench" aria-label="اختبار اسم واحد">
+    <div class="panel">
+      <label class="field" for="name">الاسم
+        <input type="text" id="name" value="عبدالرحمن" autocomplete="off" spellcheck="false">
+      </label>
+      <div class="chips" id="examples" aria-label="أمثلة سريعة"></div>
+      <dl class="facts" id="facts"></dl>
+      <div class="choose" id="choose" hidden>
+        <p class="hint" id="choose-hint">لم يجد المحرك معنى موثوقًا لهذا الاسم، فيسأل الزائر: أي هذه يشبهك؟</p>
+        <div class="chips" id="choose-opts"></div>
+      </div>
+    </div>
+
+    <div class="card-stage">
+      <div class="fonts" role="group" aria-label="خط الاسم">
+        <button class="chip" type="button" data-font="ruqaa" aria-pressed="true">رقعة</button>
+        <button class="chip" type="button" data-font="kufi" aria-pressed="false">كوفي</button>
+        <button class="chip" type="button" data-font="naskh" aria-pressed="false">نسخ</button>
+      </div>
+      <article class="card" id="card" aria-live="polite">
+        <div class="c-label">DATA SCIENCE CLUB · YU</div>
+        <div>
+          <p class="c-name" id="c-name"></p>
+          <p class="c-meaning" id="c-meaning"></p>
+        </div>
+        <blockquote class="c-quote" id="c-quote"></blockquote>
+        <div class="c-foot"><span id="c-root"></span><span id="c-theme"></span></div>
+      </article>
+      <div class="quote-actions">
+        <button class="chip" type="button" id="another">بيت آخر</button>
+        <span class="hint" id="q-count"></span>
+      </div>
+      <p class="hint">الأبيات مختارة يدويًا من «ويكي مصدر» ومحفوظة داخل الصفحة، فلا تحتاج اتصالًا وقت الفعالية. نفس الاسم والموضوع يأخذان نفس البيت دائمًا.</p>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="اختبار دفعة">
+    <div>
+      <div class="label">Batch test</div>
+      <h2>اختبار قائمة أسماء</h2>
+    </div>
+    <div class="batch">
+      <div style="display:grid; gap:12px;">
+        <label class="field" for="batch-in">اسم في كل سطر
+          <textarea id="batch-in" spellcheck="false"></textarea>
+        </label>
+        <button class="btn" id="run" type="button">شغّل الاختبار</button>
+      </div>
+      <div style="display:grid; gap:16px; min-width:0;">
+        <div class="summary" id="summary"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>الاسم</th><th>المصدر</th><th>الموضوع</th><th>الجذر</th><th>المعنى</th><th>البيت</th></tr></thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <p class="hint">اضغط أي صف لتراه في البطاقة بالأعلى.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer id="foot"></footer>
+</main>
+
+<script>
+/*__ENGINE__*/
+const DATA = /*__DATA__*/;
+
+const E = createEngine(DATA);
+const $ = (id) => document.getElementById(id);
+const ar = (n) => Number(n).toLocaleString('ar-SA');
+const SOURCES = {
+  dictionary: 'من القاموس', compound: 'اسم مركّب', root: 'من الجذر',
+  choose: 'اختر ما يشبهك', latin: 'حروف لاتينية', empty: 'فارغ', blocked: 'محجوب',
+};
+const FONTS = {
+  ruqaa: "'Aref Ruqaa', 'Amiri', serif",
+  kufi: "'Reem Kufi', 'IBM Plex Sans Arabic', sans-serif",
+  naskh: "'Amiri', serif",
+};
+const themeLabel = (id) => (E.themes.get(id) || {}).label || id;
+let state = { result: null, theme: null, font: 'ruqaa', offset: 0 };
+
+function pill(source) {
+  return `<span class="pill p-${source}">${SOURCES[source] || source}</span>`;
+}
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+}
+
+function resolve(value) {
+  state.result = E.resolve(value);
+  const r = state.result;
+  state.theme = ['choose', 'latin', 'empty', 'blocked'].includes(r.source) ? null : r.themes[0];
+  state.offset = 0;
+  renderFacts();
+  renderCard();
+}
+
+function renderFacts() {
+  const r = state.result;
+  const rows = [
+    ['المصدر', pill(r.source)],
+    ['الاسم المعتمد', r.canonical ? esc(r.canonical) : '<span class="hint">—</span>'],
+    ['المعنى', r.meaning ? esc(r.meaning) : '<span class="hint">لا يُعرض معنى</span>'],
+    ['الجذر', r.root ? `<span class="mono">${esc(r.root)}</span>` : '<span class="hint">—</span>'],
+    ['الثقة', r.confidence ? esc(r.confidence) : '<span class="hint">—</span>'],
+  ];
+  if (!['choose', 'latin', 'empty', 'blocked'].includes(r.source)) {
+    const chips = r.themes.map((t) => `<button type="button" class="chip" data-theme="${t}" aria-pressed="${t === state.theme}">${esc(themeLabel(t))}</button>`).join('');
+    rows.push(['المواضيع', `<div class="chips">${chips}</div>`]);
+  }
+  $('facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+
+  const choose = $('choose');
+  if (r.source === 'choose' || r.source === 'latin') {
+    choose.hidden = false;
+    $('choose-hint').textContent = r.source === 'latin'
+      ? 'الاسم مكتوب بحروف لاتينية. في الموقع نطلب من الزائر كتابته بالعربية. هنا للاختبار فقط، يختار ما يشبهه:'
+      : 'لم يجد المحرك معنى موثوقًا لهذا الاسم، فيسأل الزائر: أي هذه يشبهك؟';
+    $('choose-opts').innerHTML = r.themes.map((t) => `<button type="button" class="chip" data-theme="${t}" aria-pressed="${t === state.theme}">${esc(themeLabel(t))}</button>`).join('');
+  } else {
+    choose.hidden = true;
+  }
+}
+
+function renderCard() {
+  const r = state.result;
+  const card = $('card');
+  const name = r.canonical || r.input;
+  $('c-name').style.fontFamily = FONTS[state.font];
+  if (!name || r.source === 'blocked') {
+    card.classList.add('is-empty');
+    $('c-name').textContent = r.source === 'blocked' ? 'كلمة محجوبة: لا تُكتب على البطاقة' : 'اكتب اسمًا';
+    $('c-meaning').textContent = ''; $('c-quote').textContent = ''; $('c-root').textContent = ''; $('c-theme').textContent = '';
+    $('another').hidden = true; $('q-count').textContent = '';
+    return;
+  }
+  card.classList.remove('is-empty');
+  $('c-name').textContent = name;
+  $('c-meaning').textContent = r.meaning || '';
+  $('c-root').textContent = r.root ? `الجذر ${r.root}` : '';
+  if (!state.theme) {
+    $('c-quote').innerHTML = '<span class="c-attr">يظهر الاقتباس بعد أن يختار الزائر موضوعًا</span>';
+    $('c-theme').textContent = '';
+    $('another').hidden = true; $('q-count').textContent = '';
+    return;
+  }
+  const q = E.quoteFor(r, state.theme, state.offset);
+  const n = E.quotesByTheme.get(state.theme)?.length || 0;
+  $('c-quote').innerHTML = `<span class="h1">${esc(q.first)}</span><span class="h2">${esc(q.second)}</span>`
+    + `<span class="c-attr">${esc(q.author)} · <a href="${esc(q.url)}" target="_blank" rel="noopener">ويكي مصدر</a></span>`;
+  $('c-theme').textContent = themeLabel(state.theme);
+  $('another').hidden = n < 2;
+  $('q-count').textContent = `${ar(n)} أبيات في «${themeLabel(state.theme)}» · البيت ${q.id}`;
+}
+
+// أحداث الاسم الواحد
+$('name').addEventListener('input', (e) => resolve(e.target.value));
+document.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-theme]');
+  if (t && state.result) {
+    state.theme = t.dataset.theme;
+    state.offset = 0;
+    renderFacts(); renderCard();
+    return;
+  }
+  const f = e.target.closest('[data-font]');
+  if (f) {
+    state.font = f.dataset.font;
+    document.querySelectorAll('[data-font]').forEach((b) => b.setAttribute('aria-pressed', String(b === f)));
+    renderCard();
+    return;
+  }
+  if (e.target.closest('#another') && state.theme) { state.offset++; renderCard(); return; }
+  const ex = e.target.closest('[data-example]');
+  if (ex) { $('name').value = ex.dataset.example; resolve(ex.dataset.example); }
+});
+
+const EXAMPLES = ['تركي', 'نورالدين', 'ضيف الله', 'مؤمن', 'مساعد', 'ريناد', 'مايكل', 'Sara'];
+$('examples').innerHTML = EXAMPLES.map((n) => `<button type="button" class="chip" data-example="${esc(n)}">${esc(n)}</button>`).join('');
+
+// اختبار الدفعة
+const SRC_ORDER = ['dictionary', 'compound', 'root', 'choose', 'latin'];
+const SRC_VAR = { dictionary: '--s-dict', compound: '--s-comp', root: '--s-root', choose: '--s-choose', latin: '--s-latin' };
+function runBatch() {
+  const names = $('batch-in').value.split(/\n/).map((s) => s.trim()).filter(Boolean);
+  const results = names.map((n) => E.resolve(n));
+  const counts = Object.fromEntries(SRC_ORDER.map((s) => [s, 0]));
+  results.forEach((r) => { if (r.source in counts) counts[r.source]++; });
+  const total = results.length || 1;
+  const known = counts.dictionary + counts.compound;
+  $('summary').innerHTML = `
+    <div class="tiles">
+      <div class="tile"><div class="n">${ar(results.length)}</div><div class="t">اسمًا في القائمة</div></div>
+      <div class="tile"><div class="n">${ar(Math.round((known / total) * 100))}٪</div><div class="t">بمعنى مراجَع (قاموس أو مركّب)</div></div>
+      <div class="tile"><div class="n">${ar(counts.root)}</div><div class="t">بمعنى تقديري من الجذر</div></div>
+      <div class="tile"><div class="n">${ar(counts.choose + counts.latin)}</div><div class="t">يختار الزائر موضوعه</div></div>
+    </div>
+    <div class="bar" role="img" aria-label="توزيع المصادر">${SRC_ORDER.map((s) => counts[s] ? `<span style="width:${(counts[s] / total) * 100}%; background:var(${SRC_VAR[s]})"></span>` : '').join('')}</div>
+    <div class="legend">${SRC_ORDER.map((s) => `<span><i style="background:var(${SRC_VAR[s]})"></i>${SOURCES[s]} ${ar(counts[s])}</span>`).join('')}</div>`;
+  $('rows').innerHTML = results.map((r) => `
+    <tr data-example="${esc(r.input)}">
+      <td class="nm">${esc(r.input)}</td>
+      <td>${pill(r.source)}</td>
+      <td>${r.source === 'blocked' ? '<span class="hint">لا بطاقة</span>' : ['choose', 'latin'].includes(r.source) ? '<span class="hint">يختار الزائر</span>' : esc(themeLabel(r.themes[0]))}</td>
+      <td class="mono">${esc(r.root || '')}</td>
+      <td>${esc(r.meaning || '')}</td>
+      <td class="hint">${['choose', 'latin', 'blocked'].includes(r.source) ? '' : esc(E.quoteFor(r).first)}</td>
+    </tr>`).join('');
+}
+$('run').addEventListener('click', runBatch);
+$('rows').addEventListener('click', () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+
+$('batch-in').value = ['محمد', 'عبدالرحمن', 'تركي', 'متعب', 'مشاري', 'الجوهرة', 'لولوه', 'هيا', 'ريناد', 'ضيف الله', 'نور الدين', 'منار', 'إشراق', 'مؤمن', 'عزام', 'مساعد', 'هديل', 'روان', 'نزار', 'مايكل', 'Sara'].join('\n');
+$('foot').innerHTML = `<span>القاموس: ${ar(DATA.names.length)} اسمًا</span><span>جدول الجذور: ${ar(DATA.roots.length)} جذرًا</span><span>المواضيع: ${ar(DATA.themes.length)}</span><span>الأبيات: ${ar(DATA.quotes.length)} من ويكي مصدر</span><span>نادي علوم البيانات · جامعة اليمامة</span>`;
+
+resolve($('name').value);
+runBatch();
+</script>
+</body>
+</html>

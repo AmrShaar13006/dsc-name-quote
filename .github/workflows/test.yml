@@ -1,0 +1,26 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build data and run tests
+        run: npm test
+      - name: Build the pages
+        run: npm run ui
+      - name: Check the review sheets are committed
+        run: |
+          if ! git diff --quiet -- review/; then
+            echo "::error::ملفات review/*.csv تغيّرت بعد npm test. شغّل npm test على جهازك وأضفها إلى الـ commit."
+            git diff --stat -- review/
+            exit 1
+          fi

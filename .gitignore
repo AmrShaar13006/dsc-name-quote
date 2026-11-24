@@ -1,0 +1,18 @@
+.env
+.env.*
+node_modules/
+.vercel/
+
+# مولَّدة من data/*.csv (npm test / npm run ui تعيد بناءها، وVercel يبنيها عند النشر)
+src/data.js
+data/bundle.json
+ui/index.html
+ui/test.html
+ui/qr.svg
+ui/game-qr.svg
+ui/game.html
+
+# ملفات النظام والمحررات
+.DS_Store
+Thumbs.db
+__pycache__/

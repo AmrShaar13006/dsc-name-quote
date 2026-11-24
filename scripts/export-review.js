@@ -1,0 +1,50 @@
+// يصدّر نسخة المراجِع: عناوين عربية، والمواضيع بأسمائها لا بمعرّفاتها،
+// وعمودان إضافيان للمراجعة (يتجاهلهما البناء).
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+import { loadData } from './build.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const { data, allQuotes, allMachine, errors } = loadData();
+if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
+
+const label = new Map(data.themes.map((t) => [t.id, t.label]));
+const q = (v) => {
+  const s = v == null ? '' : String(v);
+  return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+};
+const header = ['الاسم', 'صيغ بديلة', 'الجنس', 'الجذر', 'المعنى', 'المواضيع', 'الثقة', 'ملاحظة', 'مراجَع', 'تعليق المراجِع'];
+const lines = [header.join(',')];
+for (const n of data.names) {
+  lines.push([
+    n.name, n.variants.join(' | '), n.gender, n.root ?? '', n.meaning,
+    n.themes.map((t) => label.get(t)).join(' + '), n.confidence, n.note ?? '', 'FALSE', '',
+  ].map(q).join(','));
+}
+mkdirSync(join(root, 'review'), { recursive: true });
+const out = join(root, 'review', 'names-review.csv');
+writeFileSync(out, lines.join('\n') + '\n');
+console.log(`✅ ${data.names.length} صفًا ← ${out}`);
+
+// ورقة «الاقتباسات» (الأبيات من ويكي مصدر): الحالة مقترح/معتمد/مستبعد — المستبعد لا يدخل البناء
+const qHeader = ['المعرّف', 'الحالة', 'المواضيع', 'الشطر الأول', 'الشطر الثاني', 'الشاعر', 'الرابط', 'القصيدة', 'ملاحظة', 'تعليق المراجِع'];
+const qLines = [qHeader.join(',')];
+for (const x of allQuotes) {
+  qLines.push([
+    x.id, x.status, x.themes.map((t) => label.get(t)).join(' + '), x.first, x.second, x.author, x.url, x.topic ?? '', x.note ?? '', '',
+  ].map(q).join(','));
+}
+const qOut = join(root, 'review', 'quotes-review.csv');
+writeFileSync(qOut, qLines.join('\n') + '\n');
+console.log(`✅ ${allQuotes.length} اقتباسًا ← ${qOut}`);
+
+// ورقة «أبيات الآلة» (شاعر أم آلة؟): الأبيات مشكولة لأن البناء يفحص وزنها؛ وفي اللعبة تُعرض بلا تشكيل
+const mHeader = ['المعرّف', 'الحالة', 'المواضيع', 'البحر', 'الشطر الأول', 'الشطر الثاني', 'النموذج', 'ملاحظة', 'تعليق المراجِع'];
+const mLines = [mHeader.join(',')];
+for (const x of allMachine) {
+  mLines.push([x.id, x.status, x.themes.map((t) => label.get(t)).join(' + '), x.meter, x.first, x.second, x.model, x.note ?? '', ''].map(q).join(','));
+}
+const mOut = join(root, 'review', 'machine-review.csv');
+writeFileSync(mOut, mLines.join('\n') + '\n');
+console.log(`✅ ${allMachine.length} بيتًا للآلة ← ${mOut}`);

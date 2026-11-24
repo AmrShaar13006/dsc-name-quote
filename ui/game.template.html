@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>شاعر أم آلة؟ · نادي علوم البيانات</title>
+<meta name="description" content="عشرة أبيات: بعضها لشعراء عرب عبر العصور، وبعضها كتبه نموذج ذكاء اصطناعي. هل تميّز بينها؟ نادي علوم البيانات، جامعة اليمامة.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_SA">
+<meta property="og:title" content="شاعر أم آلة؟">
+<meta property="og:description" content="عشرة أبيات: بعضها لشعراء عرب، وبعضها كتبه نموذج ذكاء اصطناعي. هل تميّز بينها؟">
+<meta name="theme-color" content="#FAF7F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='88 10 136 161'%3E%3Cpolygon fill='%23EB5A33' points='175.57,76.08 175.57,48.12 137.68,48.12 137.68,20.15 98.84,20.15 98.84,48.52 136.74,48.52 136.74,76.49 174.64,76.49 174.64,104.42 136.74,104.42 136.74,132.39 98.84,132.39 98.84,160.76 137.68,160.76 137.68,132.79 175.57,132.79 175.57,104.83 213.47,104.83 213.47,104.46 213.47,76.46 213.47,76.08'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Amiri&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* هوية نادي علوم البيانات، كما في صفحة «من اسمه نصيب» */
+:root {
+  --ground: #FAF7F2; --surface: #FFFFFF; --ink: #111111; --text: #1A1A1A; --muted: #6B6B6B; --line: #E3E3E3;
+  --ember: #EB5A33; --ember-dark: #C34521; --ember-wash: #FDF1EC; --teal: #127868; --teal-wash: #D7E9E5;
+  --shadow-card: 0 6px 20px rgba(17, 17, 17, .10); --focus: 0 0 0 3px rgba(235, 90, 51, .35);
+  --ease: cubic-bezier(.2, .6, .2, 1);
+  --font-ui: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #111111; --surface: #1F2023; --ink: #FFFFFF; --text: rgba(255, 255, 255, .92);
+    --muted: rgba(255, 255, 255, .62); --line: #2F2E2B; --ember-wash: #2A1C17; --teal: #5FB3A3; --teal-wash: #16302B;
+    --shadow-card: 0 14px 40px rgba(0, 0, 0, .45); --focus: 0 0 0 3px rgba(255, 255, 255, .45); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #111111; --surface: #1F2023; --ink: #FFFFFF; --text: rgba(255, 255, 255, .92);
+  --muted: rgba(255, 255, 255, .62); --line: #2F2E2B; --ember-wash: #2A1C17; --teal: #5FB3A3; --teal-wash: #16302B;
+  --shadow-card: 0 14px 40px rgba(0, 0, 0, .45); --focus: 0 0 0 3px rgba(255, 255, 255, .45); color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--ground); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; border-top: 4px solid var(--ember); }
+[hidden] { display: none !important; }
+.app { max-width: 480px; margin: 0 auto; min-height: 100svh; padding: 28px 16px calc(28px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 24px; }
+.label { font-family: var(--font-mono); font-weight: 500; font-size: 12px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--ember); direction: ltr; text-align: right; }
+h1 { margin: 10px 0 10px; font-size: 39px; line-height: 1.2; font-weight: 700; color: var(--ink); }
+h2 { margin: 0; font-size: 20px; line-height: 1.4; color: var(--ink); }
+.lede { margin: 0; font-size: 17px; color: var(--muted); text-wrap: pretty; }
+.hint { margin: 0; font-size: 14px; color: var(--muted); }
+section { display: grid; gap: 18px; }
+button:focus-visible, a:focus-visible, summary:focus-visible { outline: none; box-shadow: var(--focus); }
+
+.btn {
+  font: inherit; font-weight: 700; font-size: 19px; line-height: 1.3; cursor: pointer; text-align: center; text-decoration: none;
+  border: 0; border-radius: 8px; padding: 14px 18px; background: var(--ember); color: #fff; width: 100%; display: inline-block;
+  transition: transform 250ms var(--ease), box-shadow 250ms var(--ease), background-color 250ms var(--ease); -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(235, 90, 51, .28); background: var(--ember-dark); }
+.btn:active { transform: scale(.98); box-shadow: none; }
+.btn-quiet { background: var(--surface); color: var(--ink); border: 1px solid var(--line); font-weight: 500; font-size: 17px; padding: 11px 16px; }
+.btn-quiet:hover { background: var(--surface); box-shadow: 0 6px 20px rgba(17, 17, 17, .10); }
+
+/* شريط التقدم: مربعات النادي */
+.progress { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; }
+.progress i { height: 10px; background: var(--line); }
+.progress i.ok { background: var(--teal); }
+.progress i.no { background: var(--ember); }
+.progress i.now { background: var(--ink); }
+.count { margin: 0; font-size: 14px; color: var(--muted); }
+
+.verse {
+  margin: 0; background: #FAF7F2; color: #111; border-radius: 12px; border-top: 4px solid var(--ember); box-shadow: var(--shadow-card);
+  padding: 32px 20px; min-height: 210px; display: grid; align-content: center; gap: 6px; text-align: center;
+  font-family: 'Amiri', serif; font-size: 25px; line-height: 1.9;
+  background-image: linear-gradient(rgba(17,17,17,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,.045) 1px, transparent 1px); background-size: 32px 32px;
+}
+.verse p { margin: 0; text-wrap: balance; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.choice {
+  font: inherit; font-weight: 700; font-size: 22px; cursor: pointer; border-radius: 8px; padding: 18px 12px;
+  background: var(--surface); color: var(--ink); border: 2px solid var(--ink);
+  transition: transform 250ms var(--ease), box-shadow 250ms var(--ease); -webkit-tap-highlight-color: transparent;
+}
+.choice:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-card); }
+.choice:active:not(:disabled) { transform: scale(.98); }
+.choice:disabled { cursor: default; opacity: .45; }
+.choice.picked { opacity: 1; }
+.choice.right { border-color: var(--teal); background: var(--teal-wash); }
+.choice.wrong { border-color: var(--ember); background: var(--ember-wash); }
+.reveal { border-inline-start: 4px solid var(--line); padding: 4px 14px; display: grid; gap: 4px; }
+.reveal.ok { border-color: var(--teal); }
+.reveal.no { border-color: var(--ember); }
+.reveal p { margin: 0; }
+.res { font-weight: 700; font-size: 18px; color: var(--ink); }
+.src a, .review a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 4px; }
+.src a:hover, .review a:hover { text-decoration-color: var(--ember); }
+
+.score { display: flex; align-items: baseline; gap: 10px; color: var(--ink); }
+.score b { font-size: 76px; line-height: 1; font-weight: 700; }
+.score span { font-size: 22px; color: var(--muted); }
+.verdict { margin: 0; font-size: 20px; font-weight: 500; color: var(--ink); }
+.review { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.review li { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px; }
+.review .v { font-family: 'Amiri', serif; font-size: 18px; line-height: 1.8; color: var(--ink); }
+.review .m { font-size: 13px; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.tag { font-size: 12px; font-weight: 500; border-radius: 4px; padding: 1px 8px; color: #fff; }
+.tag.ok { background: var(--teal); }
+.tag.no { background: var(--ember); }
+details.how { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; }
+details.how summary { cursor: pointer; font-weight: 500; color: var(--ink); }
+details.how p { margin: 10px 0 0; color: var(--text); font-size: 15px; }
+.cross { display: block; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 5px; }
+footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: grid; gap: 8px; }
+
+.sheet { position: fixed; inset: 0; background: rgba(17, 17, 17, .92); z-index: 10; display: grid; place-items: center; padding: 16px; }
+.sheet-in { width: min(100%, 420px); display: grid; gap: 14px; justify-items: center; }
+.sheet p { margin: 0; color: #fff; font-weight: 500; text-align: center; }
+.sheet img { display: block; max-width: 100%; max-height: calc(100svh - 190px); width: auto; height: auto; border-radius: 12px; -webkit-touch-callout: default; }
+.sheet .row { display: flex; gap: 10px; width: 100%; }
+.sheet .row > * { flex: 1; padding-inline: 8px; }
+.sheet .btn-quiet { background: transparent; color: #fff; border-color: rgba(255, 255, 255, .35); }
+.fade-up { animation: fade-up 250ms var(--ease) both; }
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="label">DSC · Arabic Language Day</div>
+    <h1>شاعر أم آلة؟</h1>
+    <p class="lede" id="lede">عشرة أبيات: بعضها لشعراء عرب عبر العصور، وبعضها كتبه نموذج ذكاء اصطناعي. هل تميّز بينها؟</p>
+  </header>
+
+  <section id="intro">
+    <button class="btn" id="begin" type="button">ابدأ التحدي</button>
+    <p class="hint">نعرض الأبيات كلها بلا تشكيل حتى لا يكشفها الشكل، فاحكم على الشعر نفسه. لا يُستدعى أي ذكاء اصطناعي أثناء اللعب: كل الأبيات مكتوبة ومحفوظة مسبقًا.</p>
+  </section>
+
+  <section id="play" hidden aria-label="التحدي">
+    <div>
+      <div class="progress" id="progress" aria-hidden="true"></div>
+      <p class="count" id="count" aria-live="polite"></p>
+    </div>
+    <figure class="verse" id="verse" aria-live="polite"><p id="v1"></p><p id="v2"></p></figure>
+    <div class="choices" role="group" aria-label="من كتب هذا البيت؟">
+      <button class="choice" type="button" data-guess="poet">شاعر</button>
+      <button class="choice" type="button" data-guess="machine">آلة</button>
+    </div>
+    <div class="reveal" id="reveal" hidden role="status">
+      <p class="res" id="res"></p>
+      <p class="src" id="src"></p>
+    </div>
+    <button class="btn" id="next" type="button" hidden>التالي</button>
+  </section>
+
+  <section id="done" hidden aria-labelledby="done-title">
+    <h2 id="done-title" tabindex="-1">النتيجة</h2>
+    <div class="score"><b id="score"></b><span id="of"></span></div>
+    <p class="verdict" id="verdict"></p>
+    <div style="display:grid; gap:10px">
+      <button class="btn" id="save" type="button">احفظ النتيجة</button>
+      <button class="btn btn-quiet" id="again" type="button">العب مرة أخرى</button>
+    </div>
+    <h2>الأبيات العشرة</h2>
+    <ol class="review" id="review"></ol>
+    <details class="how">
+      <summary>كيف كُتبت أبيات الآلة؟</summary>
+      <p>كتبها نموذج الذكاء الاصطناعي Claude قبل الفعالية، بالبحور والمواضيع نفسها التي في أبيات الشعراء. ثم فحص النادي وزن كل بيت آليًا بمدقق عروضي كتبه، فلا يدخل اللعبة بيت مكسور الوزن. أبيات الشعراء مأخوذة من «ويكي مصدر» كما هي في صفحة القصيدة، مع اسم الشاعر ورابط القصيدة.</p>
+    </details>
+  </section>
+
+  <footer>
+    <a class="cross" href="./">جرّب أيضًا: من اسمه نصيب، اكتب اسمك وخذ بيتًا يليق به ←</a>
+    <span>نادي علوم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
+  </footer>
+</main>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+  <div class="sheet-in">
+    <p id="sheet-t">اضغط مطولًا على الصورة واختر «حفظ الصورة»</p>
+    <img id="sheet-img" alt="">
+    <div class="row">
+      <button class="btn" id="sheet-share" type="button">مشاركة</button>
+      <a class="btn" id="sheet-dl" href="#" download>تنزيل</a>
+      <button class="btn btn-quiet" id="sheet-close" type="button">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*__GAME__*/
+const DATA = /*__DATA__*/;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const ar = (n) => Number(n).toLocaleString('ar-SA');
+const N = 10;
+const POOL = gamePool(DATA);
+const SITE = /localhost|127\.0\.0\.1/.test(location.hostname) || !location.hostname ? 'dsc-name-quote.vercel.app' : location.hostname;
+const MODEL_NAME = 'Claude';
+
+// ما رآه الزائر من قبل (على جهازه فقط) حتى لا تتكرر الأبيات في الجولة التالية
+const SEEN_KEY = 'dsc-game-seen';
+function getSeen() { try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch { return new Set(); } }
+function addSeen(ids) {
+  try {
+    const s = getSeen(); ids.forEach((i) => s.add(i));
+    const keep = s.size >= POOL.length - N ? new Set(ids) : s; // إذا كاد ينفد الجديد نبدأ من جديد
+    localStorage.setItem(SEEN_KEY, JSON.stringify([...keep]));
+  } catch { /* التخزين غير متاح: لا بأس */ }
+}
+
+const game = { rounds: [], i: 0, answers: [] };
+
+function start() {
+  game.rounds = pickRounds(POOL, N, Math.random, getSeen());
+  game.i = 0;
+  game.answers = [];
+  $('intro').hidden = true; $('done').hidden = true; $('play').hidden = false; $('lede').hidden = true;
+  showRound();
+}
+
+function renderProgress() {
+  $('progress').innerHTML = game.rounds.map((_, k) => {
+    const a = game.answers[k];
+    return `<i class="${a == null ? (k === game.i ? 'now' : '') : (a ? 'ok' : 'no')}"></i>`;
+  }).join('');
+  $('count').textContent = `البيت ${ar(game.i + 1)} من ${ar(N)}`;
+}
+
+function showRound() {
+  const v = game.rounds[game.i];
+  $('v1').textContent = v.first;
+  $('v2').textContent = v.second;
+  $('verse').classList.remove('fade-up'); void $('verse').offsetWidth; $('verse').classList.add('fade-up');
+  document.querySelectorAll('.choice').forEach((b) => { b.disabled = false; b.className = 'choice'; });
+  $('reveal').hidden = true; $('next').hidden = true;
+  renderProgress();
+}
+
+function source(v) {
+  return v.kind === 'poet'
+    ? `من شعر ${esc(v.author)} · <a href="${esc(v.url)}" target="_blank" rel="noopener">القصيدة في ويكي مصدر</a>`
+    : `كتبه نموذج الذكاء الاصطناعي ${MODEL_NAME} قبل الفعالية، على بحر ${esc(v.meter)}.`;
+}
+
+function answer(guess) {
+  if (game.answers[game.i] != null) return;
+  const v = game.rounds[game.i];
+  const ok = guess === v.kind;
+  game.answers[game.i] = ok;
+  document.querySelectorAll('.choice').forEach((b) => {
+    b.disabled = true;
+    if (b.dataset.guess === guess) b.classList.add('picked', ok ? 'right' : 'wrong');
+    if (b.dataset.guess === v.kind && !ok) b.classList.add('right');
+  });
+  $('res').textContent = ok ? 'إجابة صحيحة' : (v.kind === 'machine' ? 'خدعتك الآلة' : 'بل كتبه شاعر');
+  $('src').innerHTML = source(v);
+  $('reveal').className = `reveal ${ok ? 'ok' : 'no'}`;
+  $('reveal').hidden = false;
+  $('next').textContent = game.i === N - 1 ? 'النتيجة' : 'التالي';
+  $('next').hidden = false;
+  renderProgress();
+  $('next').focus({ preventScroll: true });
+}
+
+function next() {
+  if (game.i < N - 1) { game.i++; showRound(); window.scrollTo({ top: 0 }); return; }
+  finish();
+}
+
+function finish() {
+  addSeen(game.rounds.map((r) => r.id));
+  const score = game.answers.filter(Boolean).length;
+  $('play').hidden = true; $('done').hidden = false;
+  $('score').textContent = ar(score);
+  $('of').textContent = `من ${ar(N)}`;
+  $('verdict').textContent = verdict(score, N);
+  $('review').innerHTML = game.rounds.map((v, k) => `
+    <li>
+      <span class="v">${esc(v.first)}<br>${esc(v.second)}</span>
+      <span class="m"><span class="tag ${game.answers[k] ? 'ok' : 'no'}">${game.answers[k] ? 'أصبت' : 'أخطأت'}</span>${v.kind === 'poet' ? source(v) : `كتبته الآلة (${MODEL_NAME})`}</span>
+    </li>`).join('');
+  $('done').classList.add('fade-up');
+  window.scrollTo({ top: 0 });
+  $('done-title').focus({ preventScroll: true });
+  state.blob = null;
+  drawResult(card, score);
+}
+
+// ---------- بطاقة النتيجة (Canvas 1080×1920 بمقياس 2) ----------
+const W = 1080, H = 1920, M = 72, SCALE = 2;
+const C = { cream: '#FAF7F2', ink: '#111111', text: '#1A1A1A', muted: '#6B6B6B', line: '#E3E3E3', ember: '#EB5A33', teal: '#127868' };
+const UI = "'IBM Plex Sans Arabic', system-ui, sans-serif", VERSE = "'Amiri', serif", MONO = "'JetBrains Mono', ui-monospace, monospace";
+const MB = { x: 98.84, y: 20.15, w: 114.63, h: 140.61 };
+const MARK = new Path2D('M' + '175.57,76.08 175.57,48.12 137.68,48.12 137.68,20.15 98.84,20.15 98.84,48.52 136.74,48.52 136.74,76.49 174.64,76.49 174.64,104.42 136.74,104.42 136.74,132.39 98.84,132.39 98.84,160.76 137.68,160.76 137.68,132.79 175.57,132.79 175.57,104.83 213.47,104.83 213.47,104.46 213.47,76.46 213.47,76.08'.split(' ').join(' L') + ' Z');
+const state = { blob: null };
+const card = document.createElement('canvas'); card.id = 'card';
+function txt(ctx, font, color, align = 'center', dir = 'rtl') { ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.direction = dir; }
+function wrap(ctx, s, maxW) { const out = []; let line = ''; for (const w of s.split(/\s+/)) { const t = line ? `${line} ${w}` : w; if (!line || ctx.measureText(t).width <= maxW) line = t; else { out.push(line); line = w; } } if (line) out.push(line); return out; }
+function tracked(ctx, s, x, y, sp) { ctx.textAlign = 'left'; ctx.direction = 'ltr'; for (const ch of s) { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + sp; } }
+
+async function drawResult(cv, score) {
+  const fooled = game.rounds.find((v, k) => !game.answers[k] && v.kind === 'machine') || game.rounds.find((v, k) => !game.answers[k]);
+  const sample = fooled || game.rounds.find((v) => v.kind === 'machine') || game.rounds[0];
+  const lines = `${ar(score)} ${ar(N)} ${verdict(score, N)} ${sample.first} ${sample.second}`;
+  await Promise.race([Promise.all([
+    document.fonts.load(`700 100px 'IBM Plex Sans Arabic'`, lines + 'شاعر أم آلة'),
+    document.fonts.load(`400 40px 'IBM Plex Sans Arabic'`, lines + 'نادي علوم البيانات جامعة اليمامة'),
+    document.fonts.load(`500 40px 'IBM Plex Sans Arabic'`, lines),
+    document.fonts.load(`400 50px 'Amiri'`, sample.first + sample.second),
+    document.fonts.load(`500 21px 'JetBrains Mono'`, 'ARABIC'),
+  ]).catch(() => {}), new Promise((r) => setTimeout(r, 6000))]);
+
+  cv.width = W * SCALE; cv.height = H * SCALE;
+  const ctx = cv.getContext('2d'); ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = C.cream; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = 'rgba(17,17,17,.045)'; ctx.lineWidth = 1.5; ctx.beginPath();
+  for (let x = 54; x < W; x += 54) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
+  for (let y = 54; y < H; y += 54) { ctx.moveTo(0, y); ctx.lineTo(W, y); }
+  ctx.stroke();
+  ctx.fillStyle = C.ember; ctx.fillRect(0, 0, W, 12);
+
+  txt(ctx, `700 56px ${UI}`, C.ink); ctx.fillText('شاعر أم آلة؟', W / 2, 200);
+  // مربعات الجولات العشر
+  const sq = 56, gap = 14, rowW = N * sq + (N - 1) * gap;
+  game.answers.forEach((a, k) => { ctx.fillStyle = a ? C.teal : C.ember; ctx.fillRect(W / 2 + rowW / 2 - (k + 1) * sq - k * gap, 280, sq, sq); });
+  txt(ctx, `700 300px ${UI}`, C.ink); ctx.fillText(ar(score), W / 2 + 90, 700);
+  txt(ctx, `500 64px ${UI}`, C.muted); ctx.fillText(`من ${ar(N)}`, W / 2 - 170, 700);
+  txt(ctx, `500 44px ${UI}`, C.ink);
+  wrap(ctx, verdict(score, N), 900).forEach((l, i) => ctx.fillText(l, W / 2, 820 + i * 66));
+
+  ctx.fillStyle = C.ember; ctx.fillRect(W / 2 - 56, 960, 112, 6);
+  txt(ctx, `400 32px ${UI}`, C.muted);
+  ctx.fillText(fooled ? (fooled.kind === 'machine' ? 'بيتٌ كتبته الآلة وظننته لشاعر:' : 'بيتٌ لشاعر ظننته للآلة:') : 'من أبيات الآلة في التحدي:', W / 2, 1060);
+  let vs = 54; ctx.font = `400 ${vs}px ${VERSE}`;
+  while (vs > 40 && Math.max(ctx.measureText(sample.first).width, ctx.measureText(sample.second).width) > 920) { vs -= 2; ctx.font = `400 ${vs}px ${VERSE}`; }
+  const vl = [...wrap(ctx, sample.first, 920), ...wrap(ctx, sample.second, 920)];
+  const lh = Math.round(vs * 1.85);
+  txt(ctx, `400 ${vs}px ${VERSE}`, C.ink);
+  vl.forEach((l, i) => ctx.fillText(l, W / 2, 1160 + i * lh));
+  txt(ctx, `500 30px ${UI}`, C.text);
+  ctx.fillText(sample.kind === 'machine' ? `${MODEL_NAME}، نموذج ذكاء اصطناعي` : sample.author, W / 2, 1160 + vl.length * lh + 20);
+
+  ctx.fillStyle = C.line; ctx.fillRect(M, H - M - 128, W - 2 * M, 2);
+  const mh = 72, mw = MB.w * mh / MB.h, s = mh / MB.h;
+  ctx.save(); ctx.translate(W - M - mw, H - M - mh - 4); ctx.scale(s, s); ctx.translate(-MB.x, -MB.y); ctx.fillStyle = C.ink; ctx.fill(MARK); ctx.restore();
+  const tx = W - M - mw - 24;
+  txt(ctx, `700 30px ${UI}`, C.ink, 'right'); ctx.fillText('نادي علوم البيانات', tx, H - M - 52);
+  txt(ctx, `400 26px ${UI}`, C.muted, 'right'); ctx.fillText('جامعة اليمامة', tx, H - M - 12);
+  ctx.font = `500 21px ${MONO}`; ctx.fillStyle = C.ember; tracked(ctx, 'ARABIC LANGUAGE DAY · 25 NOV 2026', M, H - M - 52, 2.6);
+  txt(ctx, `400 24px ${UI}`, C.muted, 'left', 'ltr'); ctx.fillText(`${SITE}/game.html`, M, H - M - 12);
+
+  cv.toBlob((b) => { state.blob = b; }, 'image/png');
+}
+
+// ---------- الحفظ (كما في صفحة الاسم) ----------
+const isTouch = () => matchMedia('(pointer: coarse)').matches;
+const fileName = () => 'شاعر-أم-آلة-نتيجتي.png';
+const getBlob = () => state.blob ? Promise.resolve(state.blob) : new Promise((r) => card.toBlob(r, 'image/png'));
+function download(blob) { const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = fileName(); document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 10000); }
+let sheetUrl = null;
+function openSheet(blob) {
+  sheetUrl = URL.createObjectURL(blob);
+  $('sheet-img').src = sheetUrl; $('sheet-img').alt = `نتيجتي في شاعر أم آلة: ${$('score').textContent} ${$('of').textContent}`;
+  $('sheet-dl').href = sheetUrl; $('sheet-dl').download = fileName();
+  const file = new File([blob], fileName(), { type: 'image/png' });
+  $('sheet-share').hidden = !(navigator.canShare && navigator.canShare({ files: [file] }));
+  $('sheet').hidden = false; document.body.style.overflow = 'hidden'; $('sheet-close').focus();
+}
+function closeSheet() { $('sheet').hidden = true; document.body.style.overflow = ''; if (sheetUrl) { URL.revokeObjectURL(sheetUrl); sheetUrl = null; } $('save').focus(); }
+async function save() { const b = await getBlob(); if (!b) return; if (isTouch()) openSheet(b); else download(b); }
+async function share() { const b = await getBlob(); try { await navigator.share({ files: [new File([b], fileName(), { type: 'image/png' })], title: 'شاعر أم آلة؟' }); } catch { /* أُلغيت */ } }
+
+$('begin').addEventListener('click', start);
+$('again').addEventListener('click', start);
+$('next').addEventListener('click', next);
+$('save').addEventListener('click', save);
+$('sheet-share').addEventListener('click', share);
+$('sheet-close').addEventListener('click', closeSheet);
+$('sheet').addEventListener('click', (e) => { if (e.target === $('sheet')) closeSheet(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('sheet').hidden) closeSheet(); });
+document.querySelectorAll('.choice').forEach((b) => b.addEventListener('click', () => answer(b.dataset.guess)));
+// تحميل الخطوط مبكرًا
+document.fonts.load(`400 25px 'Amiri'`, 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي');
+</script>
+</body>
+</html>
