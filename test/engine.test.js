@@ -377,6 +377,19 @@ test('الدفعة العاشرة: معاذ بن جبل ديني، وإبراه�
   assert.ok(ibrahimFigures.every((f) => f.religious === 'لا'));
 });
 
+test('الدفعة الحادية عشرة: رؤساء وملوك حديثون غير دينيين، وأنس وتميم دينيان', () => {
+  for (const [name, frag] of [['جمال', 'عبدالناصر'], ['ياسر', 'عرفات'], ['أنور', 'السادات'], ['فؤاد', 'الأول']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['أنس', 'بن مالك'], ['تميم', 'الداري']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
