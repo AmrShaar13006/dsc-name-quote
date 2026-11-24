@@ -401,6 +401,20 @@ test('الدفعة الثانية عشرة: رياض الصلح وطاهر بن 
   assert.equal(asim.religious, 'نعم');
 });
 
+test('الدفعة الثالثة عشرة: صفات بلا تواريخ دقيقة مقبولة طالما النبذة والإسهام موثّقان', () => {
+  const hamdan = E.figuresFor(R('حمدان')).find((f) => f.full_name.includes('حمدون'));
+  assert.ok(hamdan);
+  assert.ok(hamdan.bio && hamdan.contribution); // النبذة والإسهام كافيان رغم غياب التواريخ الدقيقة
+  const saeed = E.figuresFor(R('سعيد')).find((f) => f.full_name.includes('بن زيد'));
+  assert.ok(saeed);
+  assert.equal(saeed.religious, 'نعم');
+  const jabirFigures = E.figuresFor(R('جابر'));
+  assert.equal(jabirFigures.length, 2);
+  const hashim = E.figuresFor(R('هاشم')).find((f) => f.full_name.includes('عبد مناف'));
+  assert.ok(hashim);
+  assert.equal(hashim.religious, 'لا');
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
