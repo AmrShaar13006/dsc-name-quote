@@ -266,7 +266,7 @@ test('شخصيات تاريخية تحمل اسمك: مطابقة تامة لل�
   const hassan = E.figuresFor(R('حسان'));
   assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
   assert.deepEqual(E.figuresFor(R('نبيل')), []); // حسن (المطابق لآخرين) لا يطابق حسان، ونبيل بلا شخصية هنا
-  assert.deepEqual(E.figuresFor(R('خليل')), []); // لا شخصية مرتبطة به في Phase A
+  assert.deepEqual(E.figuresFor(R('جميلة')), []); // لا شخصية مرتبطة به في Phase A
   for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
 });
 
@@ -344,6 +344,19 @@ test('الدفعة السابعة: شعراء غير دينيين، وأحمد �
   const ahmadFigures = E.figuresFor(R('أحمد'));
   assert.equal(ahmadFigures.length, 3);
   assert.ok(ahmadFigures.some((f) => f.full_name.includes('المتنبي')));
+});
+
+test('الدفعة الثامنة: الفراهيدي ونجيب محفوظ وهشام غير دينيين، عقيل وثابت وسمية دينيون', () => {
+  for (const [name, frag] of [['خليل', 'الفراهيدي'], ['نجيب', 'محفوظ'], ['هشام', 'عبدالملك']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['عقيل', 'بن أبي طالب'], ['ثابت', 'بن قيس'], ['سمية', 'بنت خباط']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
 });
 
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
