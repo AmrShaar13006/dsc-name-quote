@@ -322,6 +322,19 @@ test('الدفعة الخامسة: زيد وأسامة والحسنان ديني
   }
 });
 
+test('الدفعة السادسة: يزيد والقاسم وعمار دينيون، سليمان ومروان غير دينيين', () => {
+  for (const [name, frag] of [['يزيد', 'أبي سفيان'], ['قاسم', 'بن محمد'], ['عمار', 'بن ياسر']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+  for (const [name, frag] of [['سليمان', 'عبدالملك'], ['مروان', 'بن الحكم']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
