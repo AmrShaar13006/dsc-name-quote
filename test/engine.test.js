@@ -424,6 +424,17 @@ test('الدفعة الرابعة عشرة: زايد ومعن غير دينيي�
   for (const f of data.figures) assert.match(f.url, /^https:\/\/[a-z0-9.-]+\//i, f.id);
 });
 
+test('الدفعة الخامسة عشرة: صفية وأسماء دينيتان، وليلى الأخيلية شاعرة حقيقية لا الشخصية شبه الأسطورية', () => {
+  for (const [name, frag] of [['صفية', 'بنت عبدالمطلب'], ['أسماء', 'بنت أبي بكر']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+  const layla = E.figuresFor(R('ليلى')).find((f) => f.full_name.includes('الأخيلية'));
+  assert.ok(layla);
+  assert.equal(layla.religious, 'لا');
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
