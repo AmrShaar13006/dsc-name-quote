@@ -435,6 +435,19 @@ test('الدفعة الخامسة عشرة: صفية وأسماء دينيتان
   assert.equal(layla.religious, 'لا');
 });
 
+test('الدفعة السادسة عشرة: سلمى وأروى ومي غير دينيات، شيماء وهالة دينيتان', () => {
+  for (const [name, frag] of [['سلمى', 'عمرو'], ['أروى', 'الصليحي'], ['مي', 'زيادة']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['شيماء', 'بنت الحارث'], ['هالة', 'بنت خويلد']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
