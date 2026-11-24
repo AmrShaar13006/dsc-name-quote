@@ -296,9 +296,8 @@ test('الدفعة الثالثة: ملوك ووزراء غير دينيين، �
   const abdalaziz = E.figuresFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.some((f) => f.full_name.includes('الملك عبدالعزيز')));
   const khaledFigures = E.figuresFor(R('خالد'));
-  assert.equal(khaledFigures.length, 2); // خالد بن الوليد (ديني) ثم خالد بن برمك (غير ديني)
+  assert.equal(khaledFigures.length, 3); // خالد بن الوليد (ديني)، ثم بن برمك والقسري (غير دينيين) — بلغ الحد الأقصى
   assert.equal(khaledFigures[0].religious, 'نعم'); // الصحابي أولًا بترتيب الملف
-  assert.equal(khaledFigures[1].religious, 'لا');
   const omarFigures = E.figuresFor(R('عمر'));
   assert.equal(omarFigures.length, 2);
   assert.ok(omarFigures.every((f) => f.religious === 'نعم')); // كلا شخصيتي عمر خليفتان دينيًا
@@ -357,6 +356,16 @@ test('الدفعة الثامنة: الفراهيدي ونجيب محفوظ وه
     assert.ok(f, name);
     assert.equal(f.religious, 'نعم', name);
   }
+});
+
+test('الدفعة التاسعة: شعراء حداثيون، وخالد وسعود يبلغان الحد الأقصى أو يقتربان منه', () => {
+  for (const [name, frag] of [['محمود', 'درويش'], ['أمل', 'دنقل']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  assert.equal(E.figuresFor(R('خالد')).length, 3); // بلغ الحد الأقصى
+  assert.equal(E.figuresFor(R('سعود')).length, 2);
 });
 
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
