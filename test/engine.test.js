@@ -266,8 +266,16 @@ test('شخصيات تاريخية تحمل اسمك: مطابقة تامة لل�
   const hassan = E.figuresFor(R('حسان'));
   assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
   assert.deepEqual(E.figuresFor(R('حسن')), []); // حسن لا يطابق حسان
-  assert.deepEqual(E.figuresFor(R('محمد')), []); // لا شخصية مرتبطة به في Phase A
+  assert.deepEqual(E.figuresFor(R('سعد')), []); // لا شخصية مرتبطة به في Phase A
   for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
+});
+
+test('شخصيات غير دينية يجوز لها صورة لاحقًا، ومركّب عبدالرحمن يحمل شخصيته الخاصة', () => {
+  const ibnKhaldun = E.figuresFor(R('عبدالرحمن'));
+  assert.ok(ibnKhaldun.some((f) => f.full_name.includes('خلدون')));
+  assert.ok(ibnKhaldun.every((f) => f.religious === 'لا'));
+  const ibnBattuta = E.figuresFor(R('محمد')).find((f) => f.full_name.includes('ابن بطوطة'));
+  assert.ok(ibnBattuta && ibnBattuta.religious === 'لا' && !ibnBattuta.image);
 });
 
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {

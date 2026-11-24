@@ -179,14 +179,18 @@ $('again').addEventListener('click', () => {
 });
 
 // الاسم يصل من صفحة «من اسمه نصيب» عبر جزء الرابط (#n=...) لا عبر معامل الطلب، فلا يصل إلى سجلّات الخادم
-const m = /[#&]n=([^&]+)/.exec(location.hash);
-if (m) {
-  const canonical = decodeURIComponent(m[1]);
-  $('name').value = canonical;
-  show(canonical, canonical);
-} else {
-  $('name').focus();
+function readHash() {
+  const m = /[#&]n=([^&]+)/.exec(location.hash);
+  if (m) {
+    const canonical = decodeURIComponent(m[1]);
+    $('name').value = canonical;
+    show(canonical, canonical);
+  } else {
+    $('name').focus();
+  }
 }
+window.addEventListener('hashchange', readHash);
+readHash();
 </script>
 </body>
 </html>
