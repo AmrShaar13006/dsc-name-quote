@@ -479,6 +479,15 @@ test('الدفعة العشرون: خليفة بن زايد غير ديني', ()
   assert.equal(khalifa.religious, 'لا');
 });
 
+test('الدفعة الحادية والعشرون: غازي وفيصل الأول (العراق) غير دينيين؛ فيصل يبلغ شخصيتين', () => {
+  const ghazi = E.figuresFor(R('غازي')).find((f) => f.full_name.includes('غازي الأول'));
+  assert.ok(ghazi);
+  assert.equal(ghazi.religious, 'لا');
+  const faisalFigures = E.figuresFor(R('فيصل'));
+  assert.equal(faisalFigures.length, 2);
+  assert.ok(faisalFigures.every((f) => f.religious === 'لا'));
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
