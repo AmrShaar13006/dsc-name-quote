@@ -243,7 +243,7 @@ function showRound() {
 function source(v) {
   return v.kind === 'poet'
     ? `من شعر ${esc(v.author)} · <a href="${esc(v.url)}" target="_blank" rel="noopener">القصيدة في ويكي مصدر</a>`
-    : `كتبه نموذج الذكاء الاصطناعي ${MODEL_NAME} قبل الفعالية، على بحر ${esc(v.meter)}.`;
+    : `كتبه نموذج الذكاء الاصطناعي ${MODEL_NAME} على بحر ${esc(v.meter)}.`;
 }
 
 function answer(guess) {

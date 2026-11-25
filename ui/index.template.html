@@ -134,6 +134,14 @@ input:focus-visible, button:focus-visible, a:focus-visible, canvas:focus-visible
 .verse { font-family: 'Amiri', serif; font-size: 19px; line-height: 1.9; }
 .attr a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 4px; }
 .attr a:hover { text-decoration-color: var(--ember); }
+.attr-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.chip-static { font-size: 14px; border: 1px solid var(--line); background: var(--ember-wash); color: var(--ink); border-radius: 999px; padding: 4px 12px; }
+.figure { display: block; padding: 10px 0; }
+.figure + .figure { border-top: 1px solid var(--line); margin-top: 4px; }
+.figure strong { display: block; color: var(--ink); }
+.figure .bio { display: block; font-size: 14px; margin: 2px 0 4px; }
+.figure a { color: inherit; text-decoration-color: var(--line); text-underline-offset: 4px; font-size: 13px; }
+.figure a:hover { text-decoration-color: var(--ember); }
 
 footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
 .cross { font-size: 15px; font-weight: 500; color: var(--ink); text-decoration: underline; text-decoration-color: var(--ember); text-underline-offset: 5px; margin-bottom: 6px; }
@@ -199,6 +207,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
         <button class="btn btn-quiet" id="another" type="button">بيت آخر</button>
       </div>
       <dl class="facts" id="facts"></dl>
+      <a class="cross" id="figures-link" href="#" hidden>شخصيات تاريخية تحمل اسمك ←</a>
     </div>
   </section>
 
@@ -353,9 +362,8 @@ function drawCard(cv, m) {
     text(ctx, `400 ${vs}px ${VERSE}`, C.ink);
     vlines.forEach((l, i) => ctx.fillText(l, W / 2, y + Math.round(vlh * 0.68) + i * vlh));
   } });
-  blocks.push({ h: 84, gap: 28, draw: (y) => {
+  blocks.push({ h: 42, gap: 28, draw: (y) => {
     text(ctx, `500 32px ${UI}`, C.text); ctx.fillText(q.author, W / 2, y + 34);
-    text(ctx, `400 24px ${UI}`, C.muted, 'center', 'ltr'); ctx.fillText('ar.wikisource.org', W / 2, y + 76);
   } });
 
   const top = 230, bottom = H - M - 150;
@@ -450,9 +458,22 @@ async function render() {
   if (meaning) rows.push(['المعنى', `${esc(meaning)}${NOTES[r.source] ? `<span class="note">${NOTES[r.source]}</span>` : ''}`]);
   if (r.root) rows.push(['الجذر', esc(r.root)]);
   rows.push(['الموضوع', esc(themeLabel(state.theme))]);
+  const attrs = E.attributesFor(r);
+  if (attrs.length) {
+    rows.push(['ما يستوحيه الاسم من صفات',
+      `<span class="attr-list">${attrs.map((a) => `<span class="chip chip-static">${esc(a)}</span>`).join('')}</span>` +
+      '<span class="note">صفات مستوحاة من المعنى اللغوي للاسم، وليست حكمًا على شخصية حامله.</span>']);
+  }
   rows.push(['البيت', `<span class="verse">${esc(q.first)}<br>${esc(q.second)}</span>`]);
   rows.push(['الشاعر', `<span class="attr">${esc(q.author)} · <a href="${esc(q.url)}" target="_blank" rel="noopener">القصيدة في ويكي مصدر</a></span>`]);
   $('facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+
+  // شخصيات تاريخية تحمل اسمك: صفحة مستقلة (ليست مزدحمة في البطاقة)، والاسم يُمرَّر في جزء الرابط (#) لا عبر معامل الطلب،
+  // فلا يصل إلى سجلّات الخادم ويبقى صادقًا مع وعد «يُقرأ اسمك على جهازك فقط»
+  const figuresLink = $('figures-link');
+  const hasFigures = E.figuresFor(r).length > 0;
+  figuresLink.hidden = !hasFigures;
+  if (hasFigures) figuresLink.href = 'figures.html#n=' + encodeURIComponent(r.canonical);
 
   $('card').setAttribute('aria-label', `بطاقة «${name}»${meaning ? `: ${meaning}` : ''}. ${q.first}، ${q.second}. ${q.author}.`);
 

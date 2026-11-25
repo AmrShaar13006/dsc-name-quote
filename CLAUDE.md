@@ -82,7 +82,22 @@ No dependencies: plain Node (ES modules) and `node:test`. Do not add packages un
 | `review/*.csv` | Exported reviewer copies (Arabic headers, theme labels) |
 | `test/*.test.js` | Engine, quotes and verse-splitting tests |
 
-Generated, never edit by hand, git-ignored: `src/data.js`, `data/bundle.json`, `ui/index.html`, `ui/test.html`, `ui/game.html`, `ui/qr.svg`, `ui/game-qr.svg`.
+Generated, never edit by hand, git-ignored: `src/data.js`, `data/bundle.json`, `ui/index.html`, `ui/test.html`, `ui/game.html`, `ui/figures.html`, `ui/celebrities.html`, `ui/qr.svg`, `ui/game-qr.svg`.
+
+## «شخصيات مشهورة» (added 25 Nov, separate from «شخصيات تاريخية»)
+
+`data/celebrities.csv` — same schema and policy as `figures.csv` (religious=نعم/لا hard rule, `build.js`'s `loadPeople()` helper validates both from one place), but **not restricted to historical or political figures**: any well-documented, exactly-named-matched famous person (actors, athletes, etc.), living or dead. Its own page, `ui/celebrities.template.html` → `ui/celebrities.html`, mirrors `figures.html`'s layout. Each page cross-links to the other — when a name has no match on one, that page's empty state links straight to the other with the name carried in the URL fragment (`#n=<canonical>`), and a successful match also offers the same cross-link. `engine.js`'s `celebritiesFor(result)` is independent of `figuresFor(result)`: a name can appear on both pages, on just one, or on neither.
+
+## Semantic attributes and historical figures (Phase A, added 25 Nov)
+
+Two reviewed datasets, same workflow as `quotes.csv` (status مقترح/معتمد/مستبعد, exported to `review/*.csv`, re-imported via `import-review.js`):
+
+- `data/attributes.csv`: `name,attribute,relation,justification,source,status,review_note`. «ما يستوحيه الاسم من صفات» — attributes derived from each name's already-reviewed **meaning**, never from its root alone (سعيد and مساعد share root س-ع-د but have different attributes). `relation` is one of مباشر/مرتبط/ثقافي/تأويل أدبي (`build.js` rejects any other value). `name` must match a dictionary canonical name/variant or an «عبد + اسم من أسماء الله» compound (`validTargets` in `build.js`). Shown inline on the result card as chips, under «الموضوع» and above «البيت».
+  - Covers 347 of the 357 dictionary names (25 Nov). The 10 left out on purpose have no quality in their own meaning text to derive from — only an identity reference (آدم، إبراهيم، موسى، مريم، خديجة، مي، ليلى، البندري، هلا، إسراء) — rather than invent one.
+  - `build.js` also rejects (as a templating guard) any exact attribute **set** repeated on more than 3 names: a repeat that large usually means a pattern got generalized instead of read from that one name's own meaning.
+- `data/figures.csv`: `id,name,full_name,era,birth,death,field,bio,contribution,url,religious,image,image_credit,image_license,status,review_note`. «شخصيات تاريخية تحمل اسمك» — matched on the **exact canonical name** (حسان ≠ حسن), never root or similar spelling. Shown on its own page, `ui/figures.template.html` → `ui/figures.html`, linked from the result card only when a match exists; the name is passed via the URL fragment (`figures.html#n=<canonical>`), never a query string, to keep the "اسمك لا يُرسل إلى أي خادم" promise.
+  - **`religious` (نعم/لا) is a hard build rule, not a convention**: if `نعم`, `image`/`image_credit`/`image_license` must be empty — build.js errors otherwise. No image for a religious figure, ever, including an artistic rendering (decided with Amr 25 Nov, given depicting companions/religious figures is sensitive). All 7 current figures (علي، عمر، خالد، زيد، أحمد بن حنبل، حسان — all صحابة أو أئمة) are `نعم`. جابر بن حيان (عالِم كيمياء، لا شخصية دينية) is `لا`, with no image yet — adding one needs Amr's sign-off first.
+  - If `لا` and `image` is set, it must be a `https://upload.wikimedia.org/...` file, with `image_credit` and `image_license` both required (no AI-generated images). No image → the UI shows a «؟» placeholder avatar.
 
 ## How the engine resolves a name
 

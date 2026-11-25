@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { loadData } from './build.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { data, allQuotes, allMachine, errors } = loadData();
+const { data, allQuotes, allMachine, allAttributes, allFigures, allCelebrities, errors } = loadData();
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
 const label = new Map(data.themes.map((t) => [t.id, t.label]));
@@ -48,3 +48,40 @@ for (const x of allMachine) {
 const mOut = join(root, 'review', 'machine-review.csv');
 writeFileSync(mOut, mLines.join('\n') + '\n');
 console.log(`✅ ${allMachine.length} بيتًا للآلة ← ${mOut}`);
+
+// ورقة «الصفات» (ما يستوحيه الاسم من صفات): تأويل أدبي من المعنى، الحالة مقترح/معتمد/مستبعد
+const aHeader = ['الاسم', 'الصفة', 'نوع العلاقة', 'التعليل', 'المصدر', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const aLines = [aHeader.join(',')];
+for (const x of allAttributes) {
+  aLines.push([x.name, x.attribute, x.relation ?? '', x.justification ?? '', x.source ?? '', x.status, x.note ?? '', ''].map(q).join(','));
+}
+const aOut = join(root, 'review', 'attributes-review.csv');
+writeFileSync(aOut, aLines.join('\n') + '\n');
+console.log(`✅ ${allAttributes.length} صفة ← ${aOut}`);
+
+// ورقة «الشخصيات التاريخية»: مطابقة تامة للاسم القانوني، الحالة مقترح/معتمد/مستبعد
+// شخصية دينية لا تُعرض لها صورة أبدًا (سياسة ثابتة)؛ غيرها يجوز لها صورة موثقة من ويكيميديا كومنز فقط
+const fHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'العصر', 'الميلاد', 'الوفاة', 'المجال', 'السيرة', 'المساهمة', 'الرابط', 'شخصية دينية', 'الصورة', 'مصدر الصورة', 'ترخيص الصورة', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const fLines = [fHeader.join(',')];
+for (const x of allFigures) {
+  fLines.push([
+    x.id, x.name, x.full_name, x.era ?? '', x.birth ?? '', x.death ?? '', x.field ?? '', x.bio, x.contribution ?? '', x.url,
+    x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '', '',
+  ].map(q).join(','));
+}
+const fOut = join(root, 'review', 'figures-review.csv');
+writeFileSync(fOut, fLines.join('\n') + '\n');
+console.log(`✅ ${allFigures.length} شخصية تاريخية ← ${fOut}`);
+
+// ورقة «الشخصيات المشهورة»: صفحة مستقلة عن الشخصيات التاريخية، لا تشترط كونها تاريخية أو سياسية
+const cHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'المجال', 'الميلاد', 'الوفاة', 'السيرة', 'المساهمة', 'الرابط', 'شخصية دينية', 'الصورة', 'مصدر الصورة', 'ترخيص الصورة', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const cLines = [cHeader.join(',')];
+for (const x of allCelebrities) {
+  cLines.push([
+    x.id, x.name, x.full_name, x.field ?? '', x.birth ?? '', x.death ?? '', x.bio, x.contribution ?? '', x.url,
+    x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '', '',
+  ].map(q).join(','));
+}
+const cOut = join(root, 'review', 'celebrities-review.csv');
+writeFileSync(cOut, cLines.join('\n') + '\n');
+console.log(`✅ ${allCelebrities.length} شخصية مشهورة ← ${cOut}`);

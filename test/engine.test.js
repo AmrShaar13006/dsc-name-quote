@@ -92,7 +92,7 @@ test('الجذر: أسماء خارج القاموس تُستخرج جذورها
     راضي: 'ر-ض-و', سكينة: 'س-ك-ن', أمان: 'أ-م-ن', مؤمن: 'أ-م-ن', عابد: 'ع-ب-د', جواد: 'ج-و-د',
     جودي: 'ج-و-د', وهبة: 'و-ه-ب', عطاء: 'ع-ط-ي', عطية: 'ع-ط-ي', فضل: 'ف-ض-ل', فاضل: 'ف-ض-ل',
     حسناء: 'ح-س-ن', حسني: 'ح-س-ن', بهية: 'ب-ه-و', زهور: 'ز-ه-ر', أزهار: 'ز-ه-ر', زاهر: 'ز-ه-ر',
-    زهير: 'ز-ه-ر', شجاع: 'ش-ج-ع', نصار: 'ن-ص-ر', منتصر: 'ن-ص-ر', معتصم: 'ع-ص-م', مؤيد: 'أ-ي-د',
+    أزهر: 'ز-ه-ر', شجاع: 'ش-ج-ع', نصار: 'ن-ص-ر', منتصر: 'ن-ص-ر', معتصم: 'ع-ص-م', مؤيد: 'أ-ي-د',
     رشيدة: 'ر-ش-د', عليم: 'ع-ل-م', فهيم: 'ف-ه-م', عاقل: 'ع-ق-ل', ذكية: 'ذ-ك-و', كريمة: 'ك-ر-م',
     إكرام: 'ك-ر-م', غياث: 'غ-ي-ث', مزنة: 'م-ز-ن', ميمون: 'ي-م-ن', أنيسة: 'أ-ن-س', مؤنس: 'أ-ن-س',
     رغدة: 'ر-غ-د', مبشر: 'ب-ش-ر', رجاء: 'ر-ج-و', آمال: 'أ-م-ل', ودود: 'و-د-د', يسرى: 'ي-س-ر',
@@ -108,7 +108,7 @@ test('الجذر: أسماء خارج القاموس تُستخرج جذورها
 });
 
 test('الأمان: أسماء أجنبية أو ملتبسة تذهب إلى «اختر» ولا يُخترع لها معنى', () => {
-  for (const name of ['مايكل', 'جون', 'ديفيد', 'سوزان', 'راهول', 'بريا', 'كيم', 'نزار', 'رشا', 'جيسيكا', 'أنطونيو', 'فيكتور', 'إيميلي']) {
+  for (const name of ['مايكل', 'جون', 'ديفيد', 'سوزان', 'راهول', 'بريا', 'كيم', 'نزيه', 'رشا', 'جيسيكا', 'أنطونيو', 'فيكتور', 'إيميلي']) {
     const r = R(name);
     assert.equal(r.source, 'choose', `${name} ← ${r.source} ${r.root ?? ''}`);
     assert.equal(r.meaning, null, name);
@@ -201,9 +201,16 @@ test('الاستيراد يرفض موضوعًا مكتوبًا خطأ ويذك�
   const { writeFileSync, mkdtempSync } = await import('node:fs');
   const { tmpdir } = await import('node:os');
   const { join } = await import('node:path');
-  const f = join(mkdtempSync(join(tmpdir(), 'nq-')), 'bad.csv');
+  const dir = mkdtempSync(join(tmpdir(), 'nq-'));
+  const f = join(dir, 'bad.csv');
   writeFileSync(f, 'الاسم,المعنى,المواضيع,الجذر,الثقة,الجنس\nسعد,اليُمن,السعاده,س-ع-د,عالية,ذكر\n');
-  const { errors } = loadData({ namesFile: f });
+  const af = join(dir, 'empty-attrs.csv');
+  writeFileSync(af, 'name,attribute,relation,justification,source,status\n');
+  const ff = join(dir, 'empty-figures.csv');
+  writeFileSync(ff, 'id,name,full_name,era,birth,death,field,bio,contribution,url,status\n');
+  const cf = join(dir, 'empty-celebrities.csv');
+  writeFileSync(cf, 'id,name,full_name,field,birth,death,bio,contribution,url,status\n');
+  const { errors } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff, celebritiesFile: cf });
   assert.equal(errors.length, 1);
   assert.match(errors[0], /سطر 2.*السعاده/);
 });
@@ -244,4 +251,273 @@ test('الأسماء المضافة بعد البحث: المعنى المعرو
   assert.match(R('بلال').meaning, /الندى/);
   assert.match(R('تركي').meaning, /الدولة السعودية الثانية/);
   assert.match(R('هديل').meaning, /الحمام/);
+});
+
+test('ما يستوحيه الاسم من صفات: مطابقة تامة على الاسم القانوني، لا على الجذر', () => {
+  const liath = E.attributesFor(R('ليث'));
+  assert.ok(liath.includes('الشجاعة'));
+  const saeed = E.attributesFor(R('سعيد'));
+  const musaed = E.attributesFor(R('مساعد'));
+  assert.ok(saeed.includes('السعادة'));
+  assert.ok(musaed.includes('التعاون'));
+  assert.deepEqual(saeed.filter((a) => musaed.includes(a)), []); // جذر مشترك س-ع-د لكن صفات مختلفة
+  assert.deepEqual(E.attributesFor(R('اسم غير موجود أصلًا')), []);
+});
+
+test('شخصيات تاريخية تحمل اسمك: مطابقة تامة للاسم، لا للجذر أو الاسم المشابه', () => {
+  const hassan = E.figuresFor(R('حسان'));
+  assert.ok(hassan.some((f) => f.full_name === 'حسان بن ثابت'));
+  assert.deepEqual(E.figuresFor(R('نبيل')), []); // حسن (المطابق لآخرين) لا يطابق حسان، ونبيل بلا شخصية هنا
+  assert.deepEqual(E.figuresFor(R('جميلة')), []); // لا شخصية مرتبطة به في Phase A
+  for (const f of E.figuresFor(R('علي'))) assert.ok(f.full_name && f.bio && f.url);
+});
+
+test('شخصيات غير دينية يجوز لها صورة لاحقًا، ومركّب عبدالرحمن يحمل شخصيته الخاصة', () => {
+  const ibnKhaldun = E.figuresFor(R('عبدالرحمن'));
+  assert.ok(ibnKhaldun.some((f) => f.full_name.includes('خلدون')));
+  assert.ok(ibnKhaldun.every((f) => f.religious === 'لا'));
+  const ibnBattuta = E.figuresFor(R('محمد')).find((f) => f.full_name.includes('ابن بطوطة'));
+  assert.ok(ibnBattuta && ibnBattuta.religious === 'لا' && !ibnBattuta.image);
+});
+
+test('الدفعة الثانية من الشخصيات: مالك وسلمان وبلال دينيون، طارق ويوسف وإبراهيم غير دينيين', () => {
+  for (const [name, frag] of [['مالك', 'بن أنس'], ['سلمان', 'الفارسي'], ['بلال', 'بن رباح']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+  for (const [name, frag] of [['طارق', 'بن زياد'], ['يوسف', 'تاشفين'], ['إبراهيم', 'الموصلي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
+test('الدفعة الثالثة: ملوك ووزراء غير دينيين، وعمر بن عبدالعزيز ديني رغم أنه ثاني شخصية باسم عمر', () => {
+  const abdalaziz = E.figuresFor(R('عبدالعزيز'));
+  assert.ok(abdalaziz.some((f) => f.full_name.includes('الملك عبدالعزيز')));
+  const khaledFigures = E.figuresFor(R('خالد'));
+  assert.equal(khaledFigures.length, 3); // خالد بن الوليد (ديني)، ثم بن برمك والقسري (غير دينيين) — بلغ الحد الأقصى
+  assert.equal(khaledFigures[0].religious, 'نعم'); // الصحابي أولًا بترتيب الملف
+  const omarFigures = E.figuresFor(R('عمر'));
+  assert.equal(omarFigures.length, 2);
+  assert.ok(omarFigures.every((f) => f.religious === 'نعم')); // كلا شخصيتي عمر خليفتان دينيًا
+  for (const name of ['عبدالعزيز', 'خالد', 'أحمد', 'محمد', 'عمر', 'فيصل']) {
+    assert.ok(E.figuresFor(R(name)).length <= 3, name); // الحد الأقصى 3 شخصيات لكل اسم
+  }
+});
+
+test('الدفعة الخامسة: زيد وأسامة والحسنان دينيون، يحيى والوليد غير دينيين', () => {
+  assert.equal(E.figuresFor(R('زيد')).length, 2); // زيد بن ثابت وزيد بن حارثة
+  for (const [name, frag] of [['زيد', 'بن حارثة'], ['أسامة', 'بن زيد'], ['حسن', 'بن علي'], ['حسين', 'بن علي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+  for (const [name, frag] of [['يحيى', 'البرمكي'], ['وليد', 'عبدالملك']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
+test('الدفعة السادسة: يزيد والقاسم وعمار دينيون، سليمان ومروان غير دينيين', () => {
+  for (const [name, frag] of [['يزيد', 'أبي سفيان'], ['قاسم', 'بن محمد'], ['عمار', 'بن ياسر']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+  for (const [name, frag] of [['سليمان', 'عبدالملك'], ['مروان', 'بن الحكم']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
+test('الدفعة السابعة: شعراء غير دينيين، وأحمد يبلغ الحد الأقصى 3 شخصيات', () => {
+  for (const [name, frag] of [['بشار', 'بن برد'], ['جميل', 'بثينة'], ['حاتم', 'الطائي']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  const ahmadFigures = E.figuresFor(R('أحمد'));
+  assert.equal(ahmadFigures.length, 3);
+  assert.ok(ahmadFigures.some((f) => f.full_name.includes('المتنبي')));
+});
+
+test('الدفعة الثامنة: الفراهيدي ونجيب محفوظ وهشام غير دينيين، عقيل وثابت وسمية دينيون', () => {
+  for (const [name, frag] of [['خليل', 'الفراهيدي'], ['نجيب', 'محفوظ'], ['هشام', 'عبدالملك']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['عقيل', 'بن أبي طالب'], ['ثابت', 'بن قيس'], ['سمية', 'بنت خباط']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
+test('الدفعة التاسعة: شعراء حداثيون، وخالد وسعود يبلغان الحد الأقصى أو يقتربان منه', () => {
+  for (const [name, frag] of [['محمود', 'درويش'], ['أمل', 'دنقل']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  assert.equal(E.figuresFor(R('خالد')).length, 3); // بلغ الحد الأقصى
+  assert.equal(E.figuresFor(R('سعود')).length, 2);
+});
+
+test('الدفعة العاشرة: معاذ بن جبل ديني، وإبراهيم بن الأغلب شخصية ثانية غير دينية لإبراهيم', () => {
+  const muadh = E.figuresFor(R('معاذ')).find((f) => f.full_name.includes('بن جبل'));
+  assert.ok(muadh);
+  assert.equal(muadh.religious, 'نعم');
+  const ibrahimFigures = E.figuresFor(R('إبراهيم'));
+  assert.equal(ibrahimFigures.length, 2);
+  assert.ok(ibrahimFigures.every((f) => f.religious === 'لا'));
+});
+
+test('الدفعة الحادية عشرة: رؤساء وملوك حديثون غير دينيين، وأنس وتميم دينيان', () => {
+  for (const [name, frag] of [['جمال', 'عبدالناصر'], ['ياسر', 'عرفات'], ['أنور', 'السادات'], ['فؤاد', 'الأول']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['أنس', 'بن مالك'], ['تميم', 'الداري']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
+test('الدفعة الثانية عشرة: رياض الصلح وطاهر بن الحسين غير دينيين، عاصم بن ثابت ديني', () => {
+  for (const [name, frag] of [['رياض', 'الصلح'], ['طاهر', 'بن الحسين']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  const asim = E.figuresFor(R('عاصم')).find((f) => f.full_name.includes('بن ثابت'));
+  assert.ok(asim);
+  assert.equal(asim.religious, 'نعم');
+});
+
+test('الدفعة الثالثة عشرة: صفات بلا تواريخ دقيقة مقبولة طالما النبذة والإسهام موثّقان', () => {
+  const hamdan = E.figuresFor(R('حمدان')).find((f) => f.full_name.includes('حمدون'));
+  assert.ok(hamdan);
+  assert.ok(hamdan.bio && hamdan.contribution); // النبذة والإسهام كافيان رغم غياب التواريخ الدقيقة
+  const saeed = E.figuresFor(R('سعيد')).find((f) => f.full_name.includes('بن زيد'));
+  assert.ok(saeed);
+  assert.equal(saeed.religious, 'نعم');
+  const jabirFigures = E.figuresFor(R('جابر'));
+  assert.equal(jabirFigures.length, 2);
+  const hashim = E.figuresFor(R('هاشم')).find((f) => f.full_name.includes('عبد مناف'));
+  assert.ok(hashim);
+  assert.equal(hashim.religious, 'لا');
+});
+
+test('الدفعة الرابعة عشرة: زايد ومعن غير دينيين، وكل الروابط صحيحة المخطط', () => {
+  for (const [name, frag] of [['زايد', 'آل نهيان'], ['معن', 'بن زائدة']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const f of data.figures) assert.match(f.url, /^https:\/\/[a-z0-9.-]+\//i, f.id);
+});
+
+test('الدفعة الخامسة عشرة: صفية وأسماء دينيتان، وليلى الأخيلية شاعرة حقيقية لا الشخصية شبه الأسطورية', () => {
+  for (const [name, frag] of [['صفية', 'بنت عبدالمطلب'], ['أسماء', 'بنت أبي بكر']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+  const layla = E.figuresFor(R('ليلى')).find((f) => f.full_name.includes('الأخيلية'));
+  assert.ok(layla);
+  assert.equal(layla.religious, 'لا');
+});
+
+test('الدفعة السادسة عشرة: سلمى وأروى ومي غير دينيات، شيماء وهالة دينيتان', () => {
+  for (const [name, frag] of [['سلمى', 'عمرو'], ['أروى', 'الصليحي'], ['مي', 'زيادة']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+  for (const [name, frag] of [['شيماء', 'بنت الحارث'], ['هالة', 'بنت خويلد']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
+test('الدفعة السابعة عشرة: عمرو وعامر وسالم وصفوان كلهم دينيون (صحابة وتابعي)', () => {
+  for (const [name, frag] of [['عمرو', 'بن العاص'], ['عامر', 'بن فهيرة'], ['سالم', 'بن عبدالله'], ['صفوان', 'بن أمية']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+    assert.ok(!f.image, name);
+  }
+});
+
+test('الدفعة الثامنة عشرة: العلاء بن الحضرمي وحكيم بن حزام دينيان', () => {
+  for (const [name, frag] of [['علاء', 'الحضرمي'], ['حكيم', 'بن حزام']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'نعم', name);
+  }
+});
+
+test('الدفعة التاسعة عشرة: راشد ونايف ومبارك حكّام غير دينيين', () => {
+  for (const [name, frag] of [['راشد', 'آل مكتوم'], ['نايف', 'عبدالعزيز'], ['مبارك', 'الصباح']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
+test('الدفعة العشرون: خليفة بن زايد غير ديني', () => {
+  const khalifa = E.figuresFor(R('خليفة')).find((f) => f.full_name.includes('آل نهيان'));
+  assert.ok(khalifa);
+  assert.equal(khalifa.religious, 'لا');
+});
+
+test('الدفعة الحادية والعشرون: غازي وفيصل الأول (العراق) غير دينيين؛ فيصل يبلغ شخصيتين', () => {
+  const ghazi = E.figuresFor(R('غازي')).find((f) => f.full_name.includes('غازي الأول'));
+  assert.ok(ghazi);
+  assert.equal(ghazi.religious, 'لا');
+  const faisalFigures = E.figuresFor(R('فيصل'));
+  assert.equal(faisalFigures.length, 2);
+  assert.ok(faisalFigures.every((f) => f.religious === 'لا'));
+});
+
+test('الدفعة الثانية والعشرون: زينب بنت علي دينية', () => {
+  const zainab = E.figuresFor(R('زينب')).find((f) => f.full_name.includes('بنت علي'));
+  assert.ok(zainab);
+  assert.equal(zainab.religious, 'نعم');
+});
+
+test('شخصيات مشهورة: صفحة مستقلة عن الشخصيات التاريخية، لا تشترط كونها تاريخية أو سياسية', () => {
+  const salah = E.celebritiesFor(R('محمد')).find((c) => c.full_name === 'محمد صلاح');
+  assert.ok(salah);
+  assert.equal(salah.religious, 'لا');
+  const hassan = E.celebritiesFor(R('حسان')).find((c) => c.full_name.includes('عقاد'));
+  assert.ok(hassan); // اسم «حسان» نفسه الذي طلبه المستخدم كمثال
+  assert.deepEqual(E.celebritiesFor(R('سديم')), []); // لا شخصية مشهورة مرتبطة به بعد
+  // قائمتا الشخصيات التاريخية والمشهورة مستقلتان تمامًا
+  assert.equal(E.figuresFor(R('محمد')).length, 2);
+  assert.equal(E.celebritiesFor(R('محمد')).length, 1);
+});
+
+test('الدفعة الثالثة والعشرون: تركي ونواف غير دينيين', () => {
+  for (const [name, frag] of [['تركي', 'بن عبدالله'], ['نواف', 'بن عبدالعزيز']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
+test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
+  const abdalaziz = E.attributesFor(R('عبدالعزيز'));
+  assert.ok(abdalaziz.includes('الكرامة'));
+  assert.ok(abdalaziz.includes('عزة النفس'));
 });
