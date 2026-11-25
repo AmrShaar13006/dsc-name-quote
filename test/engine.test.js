@@ -494,6 +494,14 @@ test('الدفعة الثانية والعشرون: زينب بنت علي دي�
   assert.equal(zainab.religious, 'نعم');
 });
 
+test('الدفعة الثالثة والعشرون: تركي ونواف غير دينيين', () => {
+  for (const [name, frag] of [['تركي', 'بن عبدالله'], ['نواف', 'بن عبدالعزيز']]) {
+    const f = E.figuresFor(R(name)).find((x) => x.full_name.includes(frag));
+    assert.ok(f, name);
+    assert.equal(f.religious, 'لا', name);
+  }
+});
+
 test('المركّبات تحمل صفاتها الخاصة: عبدالعزيز لا يرث صفات اسم آخر', () => {
   const abdalaziz = E.attributesFor(R('عبدالعزيز'));
   assert.ok(abdalaziz.includes('الكرامة'));
