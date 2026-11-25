@@ -351,18 +351,33 @@ export function createEngine(data) {
     return celebritiesByName.get(attrKey(result.canonical)) || [];
   }
 
+  // المجموعة العامة لكل موضوع، والأبيات المخصّصة لأسماء بعينها (forNames) خارجها:
+  // إضافة بيت مخصّص لا تغيّر بيت أي اسم آخر
   const quotesByTheme = new Map();
+  const ownQuotes = (data.quotes || []).filter((q) => q.forNames).map((q) => ({ q, keys: new Set(q.forNames.map(normalize)) }));
   for (const q of data.quotes || []) {
+    if (q.forNames) continue;
     for (const t of q.themes) {
       if (!quotesByTheme.has(t)) quotesByTheme.set(t, []);
       quotesByTheme.get(t).push(q);
     }
   }
 
-  // الاقتباس المناسب من المجموعة المختارة لهذا الموضوع
+  // الأبيات المخصّصة لهذا الاسم في هذا الموضوع، بترتيبها في الملف
+  function ownFor(result, themeId) {
+    if (!result.canonical) return [];
+    const key = normalize(result.canonical);
+    return ownQuotes.filter((o) => o.keys.has(key) && o.q.themes.includes(themeId)).map((o) => o.q);
+  }
+  // عدد الأبيات المتاحة لهذا الاسم في هذا الموضوع («بيت آخر» يدور عليها كلها)
+  const quoteCount = (result, themeId) => ownFor(result, themeId).length + (quotesByTheme.get(themeId)?.length || 0);
+
+  // المخصّص للاسم أولًا إن وجد، ثم الاقتباس المناسب من المجموعة العامة لهذا الموضوع
   function quoteFor(result, themeId = result.themes[0], offset = 0) {
-    return pickQuote(result, quotesByTheme.get(themeId), themeId, offset);
+    const own = ownFor(result, themeId);
+    const at = offset % quoteCount(result, themeId);
+    return at < own.length ? own[at] : pickQuote(result, quotesByTheme.get(themeId), themeId, at - own.length);
   }
 
-  return { resolve, pickQuote, quoteFor, quotesByTheme, lookup, findRoot, themes, isBlocked, attributesFor, figuresFor, celebritiesFor };
+  return { resolve, pickQuote, quoteFor, quoteCount, quotesByTheme, lookup, findRoot, themes, isBlocked, attributesFor, figuresFor, celebritiesFor };
 }

@@ -70,7 +70,7 @@ No dependencies: plain Node (ES modules) and `node:test`. Do not add packages un
 |---|---|
 | `data/*.csv` | **Source of truth.** `names.csv` (419 names), `roots.csv` (187 roots), `divine.csv` (38 divine names), `themes.csv` (14 themes), `quotes.csv` (83 verses from Wikisource, all status مقترح), `blocked.csv` (222 words never written on a card: insults, vulgar, religious, racial, sectarian, extremism, religious/national/tribal identities, animals, ambiguous) |
 | `scripts/build.js` | Parses and validates the CSVs. Fails with line numbers. Writes `src/data.js` and `data/bundle.json` |
-| `src/engine.js` | The engine: `createEngine(data)` returns `{ resolve, quoteFor, pickQuote, quotesByTheme, lookup, findRoot, themes }` |
+| `src/engine.js` | The engine: `createEngine(data)` returns `{ resolve, quoteFor, quoteCount, pickQuote, quotesByTheme, lookup, findRoot, themes }` |
 | `scripts/wikisource.js` | Finds and verifies verses on Arabic Wikisource: search, read the poem page (`{{ترويسة|مؤلف=…}}`, `{{أبيات|…\…}}`), match the letters without diacritics, confirm the poet |
 | `ui/index.template.html` → `scripts/build-ui.js` → `ui/index.html` | **Visitor page** (experience 1): input → card drawn on canvas → PNG. Fonts in the `STYLES` table |
 | `ui/test.template.html` → `ui/test.html` | Test bench for the team (single name + batch). Same injection |
@@ -118,7 +118,7 @@ The check strips ال / عبد / عبدال and the compound suffixes, and squee
 
 `quoteFor(result, themeId = result.themes[0], offset = 0)` picks a verse deterministically. It uses an FNV-1a hash of
 (normalised name + theme) over the theme's pool sorted by id. Same name + theme gives the same verse. `offset` gives
-"بيت آخر" (another verse). Changing the hash or the sort changes every visitor's verse.
+"بيت آخر" (another verse). Verses with `for_names` are outside the shared pool: their owners see them first, then the pool in its usual order, and nobody else ever sees them on a card. So adding a dedicated verse changes no one else's verse (tested), while adding a shared verse reshuffles everyone in its themes. Changing the hash or the sort changes every visitor's verse.
 
 `build-ui.js` injects `engine.js` into both pages with `export ` stripped. So `engine.js` must stay import-free and browser-safe.
 The visitor page shows the visitor's own first name. When it matches the dictionary form after normalisation, it uses the dictionary spelling (اسراء → إسراء). Latin input asks for Arabic letters.
@@ -131,7 +131,7 @@ The visitor page shows the visitor's own first name. When it matches the diction
   - Every strong root letter must appear in the name. No duplicate keys after normalisation.
   - Meanings are shown in their **positive** sense (e.g. متعب, هديل), with the source noted in `review_note`.
 - `roots.csv`: three-letter roots, unambiguous positive meanings only.
-- `quotes.csv`: `id,status,themes,first,second,author,url,topic,review_note`.
+- `quotes.csv`: `id,status,themes,first,second,author,url,topic,for_names,review_note`.
   - status is مقترح, معتمد or مستبعد. مستبعد is kept in the file but excluded from the build.
   - **Source: Arabic Wikisource only** (decided with Amr, 24 Nov). id is `w` + number.
     `url` is the poem's page (`https://ar.wikisource.org/wiki/<title>`), `topic` holds the page title, and `author` is required.
@@ -158,7 +158,7 @@ The visitor page shows the visitor's own first name. When it matches the diction
   - The verse must scan on `meter`, one of the 9 in `METERS`, or the build fails with the line number.
   - Same curation rules as quotes, original wording (no borrowing from known verses), and the same themes and meters as the human pool.
   - Avoid verse-final «long vowel + sukun» (ـينْ، ـادْ): the checker shortens it.
-- Themes (ids): nur, saada, hikma, karam, shajaa, iman, rahma, jamal, izza, sabr, sidq, hayat, salam, hamd. Verses per theme (25 Nov): hamd 5, rahma 6, salam 8, sabr 8, sidq 9, shajaa 9, iman 10, saada 12, nur 13, hayat 14, karam 15, hikma 17, jamal 19, izza 20.
+- Themes (ids): nur, saada, hikma, karam, shajaa, iman, rahma, jamal, izza, sabr, sidq, hayat, salam, hamd. Verses per theme (25 Nov): hamd 5, rahma 6, salam 8, sabr 8, sidq 9, shajaa 9, hayat 10, iman 10, saada 12, jamal 13, nur 13, karam 15, hikma 17, izza 17 (shared pool only; the 7 name-dedicated verses are outside it).
 
 ## Reviewer loop
 

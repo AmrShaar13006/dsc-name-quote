@@ -28,11 +28,11 @@ writeFileSync(out, lines.join('\n') + '\n');
 console.log(`✅ ${data.names.length} صفًا ← ${out}`);
 
 // ورقة «الاقتباسات» (الأبيات من ويكي مصدر): الحالة مقترح/معتمد/مستبعد — المستبعد لا يدخل البناء
-const qHeader = ['المعرّف', 'الحالة', 'المواضيع', 'الشطر الأول', 'الشطر الثاني', 'الشاعر', 'الرابط', 'القصيدة', 'ملاحظة', 'تعليق المراجِع'];
+const qHeader = ['المعرّف', 'الحالة', 'المواضيع', 'الشطر الأول', 'الشطر الثاني', 'الشاعر', 'الرابط', 'القصيدة', 'مخصّص لأسماء', 'ملاحظة', 'تعليق المراجِع'];
 const qLines = [qHeader.join(',')];
 for (const x of allQuotes) {
   qLines.push([
-    x.id, x.status, x.themes.map((t) => label.get(t)).join(' + '), x.first, x.second, x.author, x.url, x.topic ?? '', x.note ?? '', '',
+    x.id, x.status, x.themes.map((t) => label.get(t)).join(' + '), x.first, x.second, x.author, x.url, x.topic ?? '', x.forNames.join(' | '), x.note ?? '', '',
   ].map(q).join(','));
 }
 const qOut = join(root, 'review', 'quotes-review.csv');

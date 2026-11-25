@@ -39,7 +39,7 @@ const HEADER_ALIASES = {
   المواضيع: 'themes', الثقة: 'confidence', ملاحظة: 'review_note',
   // ورقة «الاقتباسات»
   'رقم الديوان': 'id', الحالة: 'status', 'الشطر الأول': 'first', 'الشطر الثاني': 'second',
-  الشاعر: 'author', الرابط: 'url', 'تصنيف الديوان': 'topic', القصيدة: 'topic',
+  الشاعر: 'author', الرابط: 'url', 'تصنيف الديوان': 'topic', القصيدة: 'topic', 'مخصّص لأسماء': 'for_names',
   // ورقة «أبيات الآلة»
   المعرّف: 'id', البحر: 'meter', النموذج: 'model',
   // ورقة «الصفات»
@@ -237,7 +237,7 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   const allQuotes = readCsv(quotesFile).map((q, i) => {
     const e = {
       id: q.id, status: q.status || 'مقترح', themes: split(q.themes),
-      first: q.first, second: q.second, author: q.author, url: q.url, topic: q.topic || null, note: q.review_note || null,
+      first: q.first, second: q.second, author: q.author, url: q.url, topic: q.topic || null, forNames: split(q.for_names), note: q.review_note || null,
     };
     const where = `quotes.csv سطر ${i + 2} (${q.id})`;
     if (!/^w\d+$/.test(e.id || '')) errors.push(`${where}: المعرّف يجب أن يكون w ثم رقم`);
@@ -247,6 +247,8 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (!e.author) errors.push(`${where}: اسم الشاعر مطلوب`);
     if (/aldiwan\.net/.test(e.url || '')) errors.push(`${where}: لا نحفظ نصوص الديوان (شروطه تمنع حفظها أكثر من 24 ساعة). خذ البيت من ويكي مصدر`);
     else if (!(e.url || '').startsWith(WIKI)) errors.push(`${where}: الرابط يجب أن يكون صفحة القصيدة في ويكي مصدر (${WIKI}…)`);
+    // بيت مخصّص لأسماء: يظهر لأصحابها فقط، ولا يدخل القرعة العامة، فلا يغيّر بيت أحد
+    for (const n of e.forNames) if (!names.some((x) => x.name === n)) errors.push(`${where}: الاسم المخصّص «${n}» ليس اسمًا في القاموس`);
     for (const s of [e.first, e.second]) {
       if (s && DIACRITIC_GLITCH.test(s)) errors.push(`${where}: خطأ طباعي في التشكيل أو «و» منفصلة`);
       if (s && /[کیۀە]/.test(s)) errors.push(`${where}: حرف فارسي (ک أو ی) بدل العربي`);
@@ -258,9 +260,9 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (qids.has(q.id)) errors.push(`quotes.csv: الرقم ${q.id} مكرر`);
     qids.add(q.id);
   }
-  const quotes = allQuotes.filter((q) => q.status !== 'مستبعد').map(({ status, note, topic, ...q }) => q);
+  const quotes = allQuotes.filter((q) => q.status !== 'مستبعد').map(({ status, note, topic, forNames, ...q }) => (forNames.length ? { ...q, forNames } : q));
   for (const t of themes) {
-    const n = quotes.filter((q) => q.themes.includes(t.id)).length;
+    const n = quotes.filter((q) => !q.forNames && q.themes.includes(t.id)).length;
     if (n < 3) errors.push(`موضوع «${t.label}» فيه ${n} اقتباسات فقط بعد الاستبعاد (الحد الأدنى 3)`);
     else if (n < MIN_QUOTES_PER_THEME) warnings.push(`موضوع «${t.label}» فيه ${n} اقتباسات — يُفضّل ${MIN_QUOTES_PER_THEME} فأكثر`);
   }

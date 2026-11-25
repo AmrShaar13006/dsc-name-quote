@@ -425,7 +425,7 @@ async function render() {
   if (chooseMode) return;
 
   const q = E.quoteFor(r, state.theme, state.offset);
-  const pool = E.quotesByTheme.get(state.theme)?.length || 0;
+  const pool = E.quoteCount(r, state.theme);
   const meaning = r.source === 'choose' ? '' : r.meaning;
   const subParts = [];
   if (r.root && r.source !== 'root') subParts.push(`الجذر ${r.root}`);

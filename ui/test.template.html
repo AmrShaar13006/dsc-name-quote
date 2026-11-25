@@ -293,7 +293,7 @@ function renderCard() {
     return;
   }
   const q = E.quoteFor(r, state.theme, state.offset);
-  const n = E.quotesByTheme.get(state.theme)?.length || 0;
+  const n = E.quoteCount(r, state.theme);
   $('c-quote').innerHTML = `<span class="h1">${esc(q.first)}</span><span class="h2">${esc(q.second)}</span>`
     + `<span class="c-attr">${esc(q.author)} · <a href="${esc(q.url)}" target="_blank" rel="noopener">ويكي مصدر</a></span>`;
   $('c-theme').textContent = themeLabel(state.theme);

@@ -210,7 +210,8 @@ test('الاستيراد يرفض موضوعًا مكتوبًا خطأ ويذك�
   writeFileSync(ff, 'id,name,full_name,era,birth,death,field,bio,contribution,url,status\n');
   const cf = join(dir, 'empty-celebrities.csv');
   writeFileSync(cf, 'id,name,full_name,field,birth,death,bio,contribution,url,status\n');
-  const { errors } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff, celebritiesFile: cf });
+  const { errors: all } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff, celebritiesFile: cf });
+  const errors = all.filter((x) => !x.startsWith('quotes.csv')); // الأبيات المخصّصة لأسماء ليست في هذه الورقة الصغيرة
   assert.equal(errors.length, 1);
   assert.match(errors[0], /سطر 2.*السعاده/);
 });

@@ -23,9 +23,9 @@ const q = (v) => {
 };
 
 export function toCanonicalQuotesCsv(quotes) {
-  const lines = ['id,status,themes,first,second,author,url,topic,review_note'];
+  const lines = ['id,status,themes,first,second,author,url,topic,for_names,review_note'];
   for (const x of quotes) {
-    lines.push([x.id, x.status, x.themes.join('|'), x.first, x.second, x.author, x.url, x.topic ?? '', x.note ?? ''].map(q).join(','));
+    lines.push([x.id, x.status, x.themes.join('|'), x.first, x.second, x.author, x.url, x.topic ?? '', x.forNames.join('|'), x.note ?? ''].map(q).join(','));
   }
   return lines.join('\n') + '\n';
 }

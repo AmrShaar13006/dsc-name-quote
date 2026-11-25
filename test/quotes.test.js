@@ -50,6 +50,31 @@ test('«بيت آخر» يدور على كل أبيات الموضوع دون ت
   assert.equal(new Set(ids).size, pool.length);
 });
 
+test('الأبيات المخصّصة: تظهر لأصحابها أولًا، ولا تغيّر بيت أي اسم آخر، ولا يراها غيرهم', () => {
+  const own = data.quotes.filter((q) => q.forNames);
+  assert.ok(own.length > 0);
+  const without = createEngine({ ...data, quotes: data.quotes.filter((q) => !q.forNames) });
+  const owners = new Set(own.flatMap((q) => q.forNames));
+  for (const name of [...data.names.map((n) => n.name), 'عبدالرحمن', 'زقزوق', 'قبلان']) {
+    const r = E.resolve(name);
+    for (const t of data.themes.map((x) => x.id)) {
+      if (owners.has(r.canonical)) {
+        for (const q of own.filter((x) => x.forNames.includes(r.canonical) && x.themes.includes(t)).slice(0, 1)) assert.equal(E.quoteFor(r, t).id, q.id, `${name} / ${t}`);
+        const ids = Array.from({ length: E.quoteCount(r, t) }, (_, i) => E.quoteFor(r, t, i).id);
+        assert.equal(new Set(ids).size, ids.length, `${name} / ${t}: «بيت آخر» يكرر`);
+      } else {
+        for (let i = 0; i < 2; i++) assert.equal(E.quoteFor(r, t, i).id, without.quoteFor(r, t, i).id, `${name} / ${t} / ${i}`);
+      }
+    }
+  }
+});
+
+test('البناء يرفض بيتًا مخصّصًا لاسم غير موجود', () => {
+  const f = join(mkdtempSync(join(tmpdir(), 'nq-')), 'own.csv');
+  writeFileSync(f, ['id,status,themes,first,second,author,url,for_names', 'w1,مقترح,sabr,أ,ب,شاعر,https://ar.wikisource.org/wiki/قصيدة,زقزوق'].join('\n'));
+  assert.match(loadData({ quotesFile: f }).errors.join('\n'), /الاسم المخصّص «زقزوق»/);
+});
+
 test('المراجِع يستبعد بيتًا ← لا يدخل البناء ولا يُختار', () => {
   const sheet = readFileSync(here('../review/quotes-review.csv'), 'utf8').split('\n');
   const victim = allQuotes[0].id;
