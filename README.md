@@ -78,9 +78,7 @@ const q2 = engine.quoteFor(r, 'iman', 1); // موضوع آخر، و«بيت آخ
 
 ## النشر
 يتولاه عمرو من حساب النادي على Vercel (`npx vercel --prod`) بعد دمج التعديلات في `main` ونجاح الاختبارات.
-يبني Vercel الموقع بـ `npm run build && npm run ui` وينشر مجلد `ui/`.
-
-`api/diwan.js` وسيط قديم لواجهة الديوان، ولا تستخدمه الصفحات. مفتاحه في متغيرات بيئة Vercel فقط، ولا يُكتب في أي ملف.
+يبني Vercel الموقع بـ `npm run build && npm run ui` وينشر مجلد `ui/`. الموقع ثابت بالكامل (static)، فلا يحتاج أي دوال خادم (serverless functions)، وهذا يناسب خطة Vercel المجانية.
 
 ## المساهمة
 نرحب بإضافة الأسماء والأبيات وتحسين الواجهة. الخطوات والقواعد في [CONTRIBUTING.md](CONTRIBUTING.md).

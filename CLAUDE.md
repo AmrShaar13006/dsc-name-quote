@@ -57,7 +57,7 @@ node scripts/wikisource.js check   # re-verify every verse in quotes.csv against
 npx vercel --prod         # deploy (folder is linked to team bada-creative-house, project dsc-name-quote)
 ```
 
-Live: https://dsc-name-quote.vercel.app (`/` visitor page, `/test.html` test bench, `/api/diwan` proxy).
+Live: https://dsc-name-quote.vercel.app (`/` visitor page, `/test.html` test bench). Fully static, no serverless functions — fits the Vercel free (Hobby) plan.
 No dependencies: plain Node (ES modules) and `node:test`. Do not add packages unless they earn their place.
 
 ## Repo map
@@ -68,7 +68,6 @@ No dependencies: plain Node (ES modules) and `node:test`. Do not add packages un
 | `scripts/build.js` | Parses and validates the CSVs. Fails with line numbers. Writes `src/data.js` and `data/bundle.json` |
 | `src/engine.js` | The engine: `createEngine(data)` returns `{ resolve, quoteFor, pickQuote, quotesByTheme, lookup, findRoot, themes }` |
 | `scripts/wikisource.js` | Finds and verifies verses on Arabic Wikisource: search, read the poem page (`{{ترويسة|مؤلف=…}}`, `{{أبيات|…\…}}`), match the letters without diacritics, confirm the poet |
-| `src/verse.js`, `api/diwan.js`, `scripts/diwan-probe.js` | **Legacy** from the AlDiwan period (verse splitter, API proxy, probe). Nothing in the content pipeline uses them now |
 | `ui/index.template.html` → `scripts/build-ui.js` → `ui/index.html` | **Visitor page** (experience 1): input → card drawn on canvas → PNG. Fonts in the `STYLES` table |
 | `ui/test.template.html` → `ui/test.html` | Test bench for the team (single name + batch). Same injection |
 | `ui/poster.html` | Posters drawn on canvas, for both experiences (`#name`, `#game`): each gets a 16:9 screen slide (3840×2160, ink) and an A4 print poster (2480×3508, cream), with download buttons. The name sample card is drawn by loading `index.html` in a hidden iframe and calling its own `drawCard`. The game poster shows a mock round on a phone screen; its verse is `GAME_VERSE` (m01), read from `game.html`'s own `POOL`, so it follows the data and is never revealed. Uses `ui/qr.svg` and `ui/game-qr.svg`, which `build-ui.js` copies from `qr/` |
@@ -180,23 +179,13 @@ Column order does not matter, because the Arabic headers are mapped in `HEADER_A
     Wikisource corrected two attributions: «بُثَّ النوال» is بشار بن برد's, not العتابي's, and «أليس من الخسران» is التهامي's («بلا نفعٍ»), not الشافعي's.
     The build rejects AlDiwan URLs. **Never store AlDiwan text in the repo again.**
   - The public GitHub history starts after the switch, so it holds no AlDiwan text. The older commits (with AlDiwan rows) stay only in the local branch `pre-github-history` on Amr's machine. **Never push that branch.**
-- Quote `text` comes with both halves glued together. Use `splitVerse(title, text)` from `src/verse.js`.
-- Proxy actions on `/api/diwan`:
-  - `ping` (calls AlDiwan `/quotes/random`, so it **spends one request**: ask first like any other call)
-  - `topics`
-  - `quotes&topic=`
-  - `probe&topics=a,b`
-  - `pool&topics=a,b&pages=1-3`
-
-  Responses are CDN-cached for 1 day, except `ping` and partial (rate-limited) results. Add `&v=N` to bypass a cached response.
-- **The site makes zero runtime calls to AlDiwan.** All content is static and reviewed.
+- **The site makes zero runtime calls to AlDiwan.** All content is static and reviewed. The old `/api/diwan` proxy, `src/verse.js` (`splitVerse`) and `scripts/diwan-probe.js` were removed (25 Nov) once nothing in the pipeline used them any more — this also drops the only serverless function from the Vercel deploy, which fits the free (Hobby) plan's function limits.
 
 ## Secrets (hard rules)
 
-- The AlDiwan key lives **only** in the Vercel env var `ALDIWAN_API_KEY` (sensitive, production). For a local probe, Amr sets `$env:ALDIWAN_API_KEY` in his PowerShell session.
-- Never write the key into any file, log, test, commit or message, and never print it.
+- `ALDIWAN_API_KEY` is no longer read by any code in the repo (the proxy that used it is gone). If it is still set in the Vercel project's env vars, Amr can remove it — ask him before touching it.
+- Never write any API key into any file, log, test, commit or message, and never print it.
 - `.env.local` was created by the Vercel CLI. Do not read it, print it or commit it (`.gitignore` covers `.env*`).
-- Remind Amr to **rotate the key after the event**.
 
 ## Windows and test gotchas (already bitten)
 

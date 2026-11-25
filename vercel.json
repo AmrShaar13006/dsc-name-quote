@@ -1,5 +1,4 @@
 {
   "buildCommand": "npm run build && npm run ui",
-  "outputDirectory": "ui",
-  "functions": { "api/diwan.js": { "maxDuration": 15 } }
+  "outputDirectory": "ui"
 }
