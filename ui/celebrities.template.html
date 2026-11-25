@@ -96,7 +96,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
   <section id="start" aria-labelledby="title">
     <div class="label">DSC · Arabic Language Day</div>
     <h1 id="title">شخصيات مشهورة تحمل اسمك</h1>
-    <p class="lede">اكتب اسمك، أو ارجع من صفحة «شخصيات تاريخية»، لنعرض لك شخصيات مشهورة موثّقة تحمل اسمك نفسه — فنانين ورياضيين وغيرهم، لا شرط أن تكون تاريخية أو سياسية.</p>
+    <p class="lede">اكتب اسمك، أو ارجع إلى صفحة «شخصيات تاريخية»، لنعرض لك شخصيات مشهورة موثّقة تحمل اسمك نفسه.</p>
   </section>
 
   <form id="form" novalidate>
@@ -130,7 +130,7 @@ function renderCelebrities(canonical) {
   const body = $('body');
   if (!celebrities.length) {
     body.innerHTML = `
-      <p class="empty">لم نجد حتى الآن شخصية مشهورة موثّقة بهذا الاسم بالضبط. نضيف شخصيات جديدة أولًا بأول.</p>
+      <p class="empty">لم نجد حتى الآن شخصية مشهورة موثّقة بهذا الاسم.</p>
       <a class="btn btn-quiet" style="margin-top:10px" href="figures.html#n=${encodeURIComponent(canonical)}">جرّب «شخصيات تاريخية» بدلًا من ذلك ←</a>`;
     return;
   }

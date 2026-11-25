@@ -362,9 +362,8 @@ function drawCard(cv, m) {
     text(ctx, `400 ${vs}px ${VERSE}`, C.ink);
     vlines.forEach((l, i) => ctx.fillText(l, W / 2, y + Math.round(vlh * 0.68) + i * vlh));
   } });
-  blocks.push({ h: 84, gap: 28, draw: (y) => {
+  blocks.push({ h: 42, gap: 28, draw: (y) => {
     text(ctx, `500 32px ${UI}`, C.text); ctx.fillText(q.author, W / 2, y + 34);
-    text(ctx, `400 24px ${UI}`, C.muted, 'center', 'ltr'); ctx.fillText('ar.wikisource.org', W / 2, y + 76);
   } });
 
   const top = 230, bottom = H - M - 150;
