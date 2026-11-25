@@ -208,7 +208,9 @@ test('الاستيراد يرفض موضوعًا مكتوبًا خطأ ويذك�
   writeFileSync(af, 'name,attribute,relation,justification,source,status\n');
   const ff = join(dir, 'empty-figures.csv');
   writeFileSync(ff, 'id,name,full_name,era,birth,death,field,bio,contribution,url,status\n');
-  const { errors } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff });
+  const cf = join(dir, 'empty-celebrities.csv');
+  writeFileSync(cf, 'id,name,full_name,field,birth,death,bio,contribution,url,status\n');
+  const { errors } = loadData({ namesFile: f, attributesFile: af, figuresFile: ff, celebritiesFile: cf });
   assert.equal(errors.length, 1);
   assert.match(errors[0], /سطر 2.*السعاده/);
 });
@@ -492,6 +494,18 @@ test('الدفعة الثانية والعشرون: زينب بنت علي دي�
   const zainab = E.figuresFor(R('زينب')).find((f) => f.full_name.includes('بنت علي'));
   assert.ok(zainab);
   assert.equal(zainab.religious, 'نعم');
+});
+
+test('شخصيات مشهورة: صفحة مستقلة عن الشخصيات التاريخية، لا تشترط كونها تاريخية أو سياسية', () => {
+  const salah = E.celebritiesFor(R('محمد')).find((c) => c.full_name === 'محمد صلاح');
+  assert.ok(salah);
+  assert.equal(salah.religious, 'لا');
+  const hassan = E.celebritiesFor(R('حسان')).find((c) => c.full_name.includes('عقاد'));
+  assert.ok(hassan); // اسم «حسان» نفسه الذي طلبه المستخدم كمثال
+  assert.deepEqual(E.celebritiesFor(R('نبيل')), []); // لا شخصية مشهورة مرتبطة به بعد
+  // قائمتا الشخصيات التاريخية والمشهورة مستقلتان تمامًا
+  assert.equal(E.figuresFor(R('محمد')).length, 2);
+  assert.equal(E.celebritiesFor(R('محمد')).length, 1);
 });
 
 test('الدفعة الثالثة والعشرون: تركي ونواف غير دينيين', () => {

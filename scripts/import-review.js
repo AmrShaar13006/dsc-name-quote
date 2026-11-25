@@ -57,10 +57,29 @@ export function toCanonicalFiguresCsv(list) {
   return lines.join('\n') + '\n';
 }
 
+export function toCanonicalCelebritiesCsv(list) {
+  const lines = ['id,name,full_name,field,birth,death,bio,contribution,url,religious,image,image_credit,image_license,status,review_note'];
+  for (const x of list) {
+    lines.push([
+      x.id, x.name, x.full_name, x.field ?? '', x.birth ?? '', x.death ?? '', x.bio, x.contribution ?? '', x.url,
+      x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '',
+    ].map(q).join(','));
+  }
+  return lines.join('\n') + '\n';
+}
+
 export const isQuotesSheet = (text) => parseCsv(text)[0].some((h) => ['الشطر الأول', 'first'].includes(h.trim()));
 export const isMachineSheet = (text) => parseCsv(text)[0].some((h) => ['البحر', 'meter'].includes(h.trim()));
 export const isAttributesSheet = (text) => parseCsv(text)[0].some((h) => ['الصفة', 'attribute'].includes(h.trim()));
-export const isFiguresSheet = (text) => parseCsv(text)[0].some((h) => ['الاسم الكامل', 'full_name'].includes(h.trim()));
+// الشخصيات التاريخية والمشهورة كلاهما له «الاسم الكامل»، فالتمييز بينهما بعمود «العصر» (موجود للتاريخية فقط)
+export const isFiguresSheet = (text) => {
+  const h = parseCsv(text)[0].map((x) => x.trim());
+  return h.some((x) => ['الاسم الكامل', 'full_name'].includes(x)) && h.some((x) => ['العصر', 'era'].includes(x));
+};
+export const isCelebritiesSheet = (text) => {
+  const h = parseCsv(text)[0].map((x) => x.trim());
+  return h.some((x) => ['الاسم الكامل', 'full_name'].includes(x)) && !h.some((x) => ['العصر', 'era'].includes(x));
+};
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const file = process.argv[2];
@@ -74,6 +93,16 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     }
     writeFileSync(join(root, 'data', 'figures.csv'), toCanonicalFiguresCsv(allFigures));
     console.log(`✅ استُورد ${allFigures.length} شخصية تاريخية إلى data/figures.csv — شغّل الآن: npm test`);
+    process.exit(0);
+  }
+  if (isCelebritiesSheet(text)) {
+    const { allCelebrities, errors } = loadData({ celebritiesFile: resolve(file) });
+    if (errors.length) {
+      console.error('❌ لم يُستورد شيء. صحّح هذه في الجدول ثم أعد التنزيل:\n' + errors.map((e) => ' - ' + e).join('\n'));
+      process.exit(1);
+    }
+    writeFileSync(join(root, 'data', 'celebrities.csv'), toCanonicalCelebritiesCsv(allCelebrities));
+    console.log(`✅ استُورد ${allCelebrities.length} شخصية مشهورة إلى data/celebrities.csv — شغّل الآن: npm test`);
     process.exit(0);
   }
   if (isAttributesSheet(text)) {

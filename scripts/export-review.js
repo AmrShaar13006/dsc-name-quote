@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { loadData } from './build.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const { data, allQuotes, allMachine, allAttributes, allFigures, errors } = loadData();
+const { data, allQuotes, allMachine, allAttributes, allFigures, allCelebrities, errors } = loadData();
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 
 const label = new Map(data.themes.map((t) => [t.id, t.label]));
@@ -72,3 +72,16 @@ for (const x of allFigures) {
 const fOut = join(root, 'review', 'figures-review.csv');
 writeFileSync(fOut, fLines.join('\n') + '\n');
 console.log(`✅ ${allFigures.length} شخصية تاريخية ← ${fOut}`);
+
+// ورقة «الشخصيات المشهورة»: صفحة مستقلة عن الشخصيات التاريخية، لا تشترط كونها تاريخية أو سياسية
+const cHeader = ['المعرّف', 'الاسم', 'الاسم الكامل', 'المجال', 'الميلاد', 'الوفاة', 'السيرة', 'المساهمة', 'الرابط', 'شخصية دينية', 'الصورة', 'مصدر الصورة', 'ترخيص الصورة', 'الحالة', 'ملاحظة', 'تعليق المراجِع'];
+const cLines = [cHeader.join(',')];
+for (const x of allCelebrities) {
+  cLines.push([
+    x.id, x.name, x.full_name, x.field ?? '', x.birth ?? '', x.death ?? '', x.bio, x.contribution ?? '', x.url,
+    x.religious, x.image ?? '', x.image_credit ?? '', x.image_license ?? '', x.status, x.note ?? '', '',
+  ].map(q).join(','));
+}
+const cOut = join(root, 'review', 'celebrities-review.csv');
+writeFileSync(cOut, cLines.join('\n') + '\n');
+console.log(`✅ ${allCelebrities.length} شخصية مشهورة ← ${cOut}`);

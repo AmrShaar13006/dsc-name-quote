@@ -26,6 +26,7 @@ const PAGES = [
   ['index.template.html', 'index.html', data],
   ['game.template.html', 'game.html', gameData],
   ['figures.template.html', 'figures.html', data],
+  ['celebrities.template.html', 'celebrities.html', data],
   ['test.template.html', 'test.html', data],
 ];
 for (const [from, to, pageData] of PAGES) {

@@ -331,6 +331,13 @@ export function createEngine(data) {
     if (!figuresByName.has(k)) figuresByName.set(k, []);
     figuresByName.get(k).push(f);
   }
+  // «شخصيات مشهورة»: صفحة مستقلة عن الشخصيات التاريخية، لا تشترط أن تكون الشخصية تاريخية أو سياسية
+  const celebritiesByName = new Map();
+  for (const c of data.celebrities || []) {
+    const k = attrKey(c.name);
+    if (!celebritiesByName.has(k)) celebritiesByName.set(k, []);
+    celebritiesByName.get(k).push(c);
+  }
   function attributesFor(result) {
     if (!result.canonical) return [];
     return (attributesByName.get(attrKey(result.canonical)) || []).map((a) => a.attribute);
@@ -338,6 +345,10 @@ export function createEngine(data) {
   function figuresFor(result) {
     if (!result.canonical) return [];
     return figuresByName.get(attrKey(result.canonical)) || [];
+  }
+  function celebritiesFor(result) {
+    if (!result.canonical) return [];
+    return celebritiesByName.get(attrKey(result.canonical)) || [];
   }
 
   const quotesByTheme = new Map();
@@ -353,5 +364,5 @@ export function createEngine(data) {
     return pickQuote(result, quotesByTheme.get(themeId), themeId, offset);
   }
 
-  return { resolve, pickQuote, quoteFor, quotesByTheme, lookup, findRoot, themes, isBlocked, attributesFor, figuresFor };
+  return { resolve, pickQuote, quoteFor, quotesByTheme, lookup, findRoot, themes, isBlocked, attributesFor, figuresFor, celebritiesFor };
 }

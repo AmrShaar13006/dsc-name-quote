@@ -82,7 +82,11 @@ No dependencies: plain Node (ES modules) and `node:test`. Do not add packages un
 | `review/*.csv` | Exported reviewer copies (Arabic headers, theme labels) |
 | `test/*.test.js` | Engine, quotes and verse-splitting tests |
 
-Generated, never edit by hand, git-ignored: `src/data.js`, `data/bundle.json`, `ui/index.html`, `ui/test.html`, `ui/game.html`, `ui/figures.html`, `ui/qr.svg`, `ui/game-qr.svg`.
+Generated, never edit by hand, git-ignored: `src/data.js`, `data/bundle.json`, `ui/index.html`, `ui/test.html`, `ui/game.html`, `ui/figures.html`, `ui/celebrities.html`, `ui/qr.svg`, `ui/game-qr.svg`.
+
+## «شخصيات مشهورة» (added 25 Nov, separate from «شخصيات تاريخية»)
+
+`data/celebrities.csv` — same schema and policy as `figures.csv` (religious=نعم/لا hard rule, `build.js`'s `loadPeople()` helper validates both from one place), but **not restricted to historical or political figures**: any well-documented, exactly-named-matched famous person (actors, athletes, etc.), living or dead. Its own page, `ui/celebrities.template.html` → `ui/celebrities.html`, mirrors `figures.html`'s layout. Each page cross-links to the other — when a name has no match on one, that page's empty state links straight to the other with the name carried in the URL fragment (`#n=<canonical>`), and a successful match also offers the same cross-link. `engine.js`'s `celebritiesFor(result)` is independent of `figuresFor(result)`: a name can appear on both pages, on just one, or on neither.
 
 ## Semantic attributes and historical figures (Phase A, added 25 Nov)
 

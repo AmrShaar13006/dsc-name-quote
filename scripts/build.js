@@ -65,7 +65,7 @@ function readCsv(file) {
 let THEME_LABELS = new Map();
 const split = (s) => (s ? s.split(/[|+،]/).map((x) => x.trim()).filter(Boolean).map((x) => THEME_LABELS.get(x) || x) : []);
 
-export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', blockedFile = 'blocked.csv', machineFile = 'machine.csv', attributesFile = 'attributes.csv', figuresFile = 'figures.csv' } = {}) {
+export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', blockedFile = 'blocked.csv', machineFile = 'machine.csv', attributesFile = 'attributes.csv', figuresFile = 'figures.csv', celebritiesFile = 'celebrities.csv' } = {}) {
   const errors = [];
   const warnings = [];
 
@@ -179,45 +179,50 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
     if (names.length > 3) errors.push(`attributes.csv: مجموعة الصفات «${key}» مطابقة حرفيًا على ${names.length} أسماء (${names.join('، ')}) — راجع كل اسم على حدة بدل تعميم نمط واحد`);
   }
 
-  // «شخصيات تاريخية تحمل اسمك»: مطابقة تامة للاسم القانوني، لا للجذر أو الموضوع
+  // «شخصيات تاريخية تحمل اسمك» و«شخصيات مشهورة»: مطابقة تامة للاسم القانوني، لا للجذر أو الموضوع
   const YES_NO = ['نعم', 'لا'];
-  const allFigures = readCsv(figuresFile).map((f, i) => {
-    const e = {
-      id: f.id, name: f.name, full_name: f.full_name, era: f.era || null, birth: f.birth || null, death: f.death || null,
-      field: f.field || null, bio: f.bio, contribution: f.contribution || null, url: f.url,
-      religious: f.religious, image: f.image || null, image_credit: f.image_credit || null, image_license: f.image_license || null,
-      status: f.status || 'مقترح', note: f.review_note || null,
-    };
-    const where = `figures.csv سطر ${i + 2} (${e.id})`;
-    if (!/^f\d+$/.test(e.id || '')) errors.push(`${where}: المعرّف يجب أن يكون f ثم رقم`);
-    if (!validTargets.has(normalize(e.name).replace(/\s/g, ''))) errors.push(`${where}: الاسم «${e.name}» غير موجود في القاموس أو مركّبات أسماء الله`);
-    if (!e.full_name) errors.push(`${where}: الاسم الكامل مطلوب`);
-    if (!e.bio) errors.push(`${where}: السيرة مطلوبة`);
-    if (!e.url) errors.push(`${where}: الرابط مطلوب`);
-    else {
-      const schemeHost = e.url.split('/').slice(0, 3).join('/');
-      if (!/^https:\/\/[a-z0-9.-]+$/i.test(schemeHost)) errors.push(`${where}: الرابط فيه خطأ مطبعي في المخطط/المضيف (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
-      if (/wikipedia\.org/.test(e.url) && !e.url.includes('/wiki/')) errors.push(`${where}: رابط ويكيبيديا يجب أن يحوي "/wiki/" بأحرف لاتينية (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
-    }
-    if (!YES_NO.includes(e.religious)) errors.push(`${where}: «شخصية دينية» يجب أن تكون نعم/لا`);
-    // سياسة ثابتة: شخصية دينية لا تُعرض لها صورة أبدًا، ولو كانت رسمة فنية — لا استثناء
-    if (e.religious === 'نعم' && (e.image || e.image_credit || e.image_license)) {
-      errors.push(`${where}: شخصية دينية لا يجوز أن يكون لها صورة بأي حال — أفرغ image/image_credit/image_license`);
-    }
-    if (e.religious === 'لا' && e.image) {
-      if (!e.image_credit) errors.push(`${where}: الصورة بلا مصدر (image_credit) مطلوب`);
-      if (!e.image_license) errors.push(`${where}: الصورة بلا ترخيص (image_license) مطلوب`);
-      if (!/^https:\/\/upload\.wikimedia\.org\//.test(e.image)) errors.push(`${where}: الصورة يجب أن تكون ملفًا من ويكيميديا كومنز (upload.wikimedia.org)، لا رابطًا آخر ولا صورة مولَّدة بالذكاء الاصطناعي`);
-    }
-    if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
-    return e;
-  });
-  const fids = new Set();
-  for (const f of allFigures) { if (fids.has(f.id)) errors.push(`figures.csv: المعرّف ${f.id} مكرر`); fids.add(f.id); }
-  const figures = allFigures.filter((f) => f.status !== 'مستبعد').map(({ status, note, ...f }) => f);
-  const figuresPerName = new Map();
-  for (const f of figures) figuresPerName.set(f.name, (figuresPerName.get(f.name) || 0) + 1);
-  for (const [name, n] of figuresPerName) if (n > 3) errors.push(`figures.csv: «${name}» له ${n} شخصيات، والحد الأقصى 3`);
+  function loadPeople(file, idPrefix, label) {
+    const all = readCsv(file).map((f, i) => {
+      const e = {
+        id: f.id, name: f.name, full_name: f.full_name, era: f.era || null, birth: f.birth || null, death: f.death || null,
+        field: f.field || null, bio: f.bio, contribution: f.contribution || null, url: f.url,
+        religious: f.religious, image: f.image || null, image_credit: f.image_credit || null, image_license: f.image_license || null,
+        status: f.status || 'مقترح', note: f.review_note || null,
+      };
+      const where = `${file} سطر ${i + 2} (${e.id})`;
+      if (!new RegExp(`^${idPrefix}\\d+$`).test(e.id || '')) errors.push(`${where}: المعرّف يجب أن يكون ${idPrefix} ثم رقم`);
+      if (!validTargets.has(normalize(e.name).replace(/\s/g, ''))) errors.push(`${where}: الاسم «${e.name}» غير موجود في القاموس أو مركّبات أسماء الله`);
+      if (!e.full_name) errors.push(`${where}: الاسم الكامل مطلوب`);
+      if (!e.bio) errors.push(`${where}: السيرة مطلوبة`);
+      if (!e.url) errors.push(`${where}: الرابط مطلوب`);
+      else {
+        const schemeHost = e.url.split('/').slice(0, 3).join('/');
+        if (!/^https:\/\/[a-z0-9.-]+$/i.test(schemeHost)) errors.push(`${where}: الرابط فيه خطأ مطبعي في المخطط/المضيف (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
+        if (/wikipedia\.org/.test(e.url) && !e.url.includes('/wiki/')) errors.push(`${where}: رابط ويكيبيديا يجب أن يحوي "/wiki/" بأحرف لاتينية (تأكد ألا يتسلل حرف عربي مشابه مثل «ي» بدل «i»)`);
+      }
+      if (!YES_NO.includes(e.religious)) errors.push(`${where}: «شخصية دينية» يجب أن تكون نعم/لا`);
+      // سياسة ثابتة: شخصية دينية لا تُعرض لها صورة أبدًا، ولو كانت رسمة فنية — لا استثناء
+      if (e.religious === 'نعم' && (e.image || e.image_credit || e.image_license)) {
+        errors.push(`${where}: شخصية دينية لا يجوز أن يكون لها صورة بأي حال — أفرغ image/image_credit/image_license`);
+      }
+      if (e.religious === 'لا' && e.image) {
+        if (!e.image_credit) errors.push(`${where}: الصورة بلا مصدر (image_credit) مطلوب`);
+        if (!e.image_license) errors.push(`${where}: الصورة بلا ترخيص (image_license) مطلوب`);
+        if (!/^https:\/\/upload\.wikimedia\.org\//.test(e.image)) errors.push(`${where}: الصورة يجب أن تكون ملفًا من ويكيميديا كومنز (upload.wikimedia.org)، لا رابطًا آخر ولا صورة مولَّدة بالذكاء الاصطناعي`);
+      }
+      if (!QUOTE_STATUS.includes(e.status)) errors.push(`${where}: الحالة يجب أن تكون ${QUOTE_STATUS.join('/')}`);
+      return e;
+    });
+    const ids = new Set();
+    for (const f of all) { if (ids.has(f.id)) errors.push(`${file}: المعرّف ${f.id} مكرر`); ids.add(f.id); }
+    const approved = all.filter((f) => f.status !== 'مستبعد').map(({ status, note, ...f }) => f);
+    const perName = new Map();
+    for (const f of approved) perName.set(f.name, (perName.get(f.name) || 0) + 1);
+    for (const [name, n] of perName) if (n > 3) errors.push(`${file}: «${name}» له ${n} ${label}، والحد الأقصى 3`);
+    return { all, approved };
+  }
+  const { all: allFigures, approved: figures } = loadPeople(figuresFile, 'f', 'شخصيات');
+  const { all: allCelebrities, approved: celebrities } = loadPeople(celebritiesFile, 'c', 'شخصيات مشهورة');
 
   // جذور مستخدمة في القاموس وغير موجودة في جدول الجذور (تنبيه فقط)
   for (const n of names) {
@@ -298,7 +303,7 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   for (const m of allMachine) { if (mids.has(m.id)) errors.push(`machine.csv: المعرّف ${m.id} مكرر`); mids.add(m.id); }
   const machine = allMachine.filter((m) => m.status !== 'مستبعد').map(({ status, note, ...m }) => m);
 
-  return { data: { themes, names, roots, divine, quotes, blocked, machine, attributes, figures }, allQuotes, allMachine, allAttributes, allFigures, errors, warnings };
+  return { data: { themes, names, roots, divine, quotes, blocked, machine, attributes, figures, celebrities }, allQuotes, allMachine, allAttributes, allFigures, allCelebrities, errors, warnings };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -310,7 +315,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const uniqWarn = [...new Set(warnings)];
   writeFileSync(join(root, 'data', 'bundle.json'), JSON.stringify(data, null, 1));
   writeFileSync(join(root, 'src', 'data.js'), '// مولَّد تلقائيًا من data/*.csv — لا تعدّله يدويًا\nexport default ' + JSON.stringify(data) + ';\n');
-  console.log(`✅ ${data.names.length} اسمًا، ${data.roots.length} جذرًا، ${data.divine.length} من أسماء الله، ${data.themes.length} موضوعًا، ${data.quotes.length} اقتباسًا، ${readCsv('blocked.csv').length} كلمة محجوبة، ${data.machine.length} بيتًا للآلة، ${data.attributes.length} صفة لـ${new Set(data.attributes.map((a) => a.name)).size} اسمًا، ${data.figures.length} شخصية تاريخية`);
+  console.log(`✅ ${data.names.length} اسمًا، ${data.roots.length} جذرًا، ${data.divine.length} من أسماء الله، ${data.themes.length} موضوعًا، ${data.quotes.length} اقتباسًا، ${readCsv('blocked.csv').length} كلمة محجوبة، ${data.machine.length} بيتًا للآلة، ${data.attributes.length} صفة لـ${new Set(data.attributes.map((a) => a.name)).size} اسمًا، ${data.figures.length} شخصية تاريخية، ${data.celebrities.length} شخصية مشهورة`);
   const qWarn = uniqWarn.filter((w) => w.startsWith('موضوع'));
   for (const w of qWarn) console.log('⚠️  ' + w);
   console.log(`ℹ️  ${uniqWarn.length - qWarn.length} تنبيه (جذور في القاموس غير موجودة في جدول الجذور)`);
