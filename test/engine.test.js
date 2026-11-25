@@ -502,7 +502,7 @@ test('شخصيات مشهورة: صفحة مستقلة عن الشخصيات ا�
   assert.equal(salah.religious, 'لا');
   const hassan = E.celebritiesFor(R('حسان')).find((c) => c.full_name.includes('عقاد'));
   assert.ok(hassan); // اسم «حسان» نفسه الذي طلبه المستخدم كمثال
-  assert.deepEqual(E.celebritiesFor(R('غيث')), []); // لا شخصية مشهورة مرتبطة به بعد
+  assert.deepEqual(E.celebritiesFor(R('سديم')), []); // لا شخصية مشهورة مرتبطة به بعد
   // قائمتا الشخصيات التاريخية والمشهورة مستقلتان تمامًا
   assert.equal(E.figuresFor(R('محمد')).length, 2);
   assert.equal(E.celebritiesFor(R('محمد')).length, 1);
