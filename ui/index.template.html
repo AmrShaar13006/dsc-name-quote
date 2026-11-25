@@ -213,7 +213,6 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
 
   <footer>
     <a class="cross" href="game.html">جرّب أيضًا: شاعر أم آلة؟ هل تميّز بيت الشاعر من بيت الآلة ←</a>
-    <span>يُقرأ اسمك على جهازك فقط، ولا يُرسل إلى أي خادم.</span>
     <span>نادي علوم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
   </footer>
 </main>
@@ -469,7 +468,7 @@ async function render() {
   $('facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
 
   // شخصيات تاريخية تحمل اسمك: صفحة مستقلة (ليست مزدحمة في البطاقة)، والاسم يُمرَّر في جزء الرابط (#) لا عبر معامل الطلب،
-  // فلا يصل إلى سجلّات الخادم ويبقى صادقًا مع وعد «يُقرأ اسمك على جهازك فقط»
+  // فلا يصل إلى سجلّات الخادم
   const figuresLink = $('figures-link');
   const hasFigures = E.figuresFor(r).length > 0;
   figuresLink.hidden = !hasFigures;
