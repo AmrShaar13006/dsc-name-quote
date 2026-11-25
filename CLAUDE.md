@@ -17,9 +17,9 @@ There is **no booth or corner**. This is a standalone public website that people
 
 | # | Experience | State |
 |---|---|---|
-| 1 | **من اسمه نصيب**: the visitor's name → meaning, root, theme → a fitting verse, on a card with the name in Arabic calligraphy | Engine, data, 76 verses from Wikisource (27 poets) and the **visitor page** (`ui/index.html`) are done. The test bench moved to `ui/test.html`. |
+| 1 | **من اسمه نصيب**: the visitor's name → meaning, root, theme → a fitting verse, on a card with the name in Arabic calligraphy | Engine, data, 83 verses from Wikisource (31 poets) and the **visitor page** (`ui/index.html`) are done. The test bench moved to `ui/test.html`. |
 | 2 | **سحابة كلمات حية**: a live word cloud | **Postponed** until the concept, form and use are developed further |
-| 3 | **شاعر أم آلة؟**: visitors guess whether a verse is by a poet or a machine | **Built** (`ui/game.html`): 34 machine verses written by Claude, each meter-checked, plus the 76 poets' verses from Wikisource. The machine verses are **not yet reviewed by a human**. |
+| 3 | **شاعر أم آلة؟**: visitors guess whether a verse is by a poet or a machine | **Built** (`ui/game.html`): 34 machine verses written by Claude, each meter-checked, plus the 83 poets' verses from Wikisource. The machine verses are **not yet reviewed by a human**. |
 
 Decisions settled with Amr (23 Nov):
 - Visitors use their own phones via QR. Nothing runs on club hardware.
@@ -68,7 +68,7 @@ No dependencies: plain Node (ES modules) and `node:test`. Do not add packages un
 
 | Path | What it is |
 |---|---|
-| `data/*.csv` | **Source of truth.** `names.csv` (357 names), `roots.csv` (187 roots), `divine.csv` (38 divine names), `themes.csv` (14 themes), `quotes.csv` (76 verses from Wikisource, all status مقترح), `blocked.csv` (222 words never written on a card: insults, vulgar, religious, racial, sectarian, extremism, religious/national/tribal identities, animals, ambiguous) |
+| `data/*.csv` | **Source of truth.** `names.csv` (419 names), `roots.csv` (187 roots), `divine.csv` (38 divine names), `themes.csv` (14 themes), `quotes.csv` (83 verses from Wikisource, all status مقترح), `blocked.csv` (222 words never written on a card: insults, vulgar, religious, racial, sectarian, extremism, religious/national/tribal identities, animals, ambiguous) |
 | `scripts/build.js` | Parses and validates the CSVs. Fails with line numbers. Writes `src/data.js` and `data/bundle.json` |
 | `src/engine.js` | The engine: `createEngine(data)` returns `{ resolve, quoteFor, pickQuote, quotesByTheme, lookup, findRoot, themes }` |
 | `scripts/wikisource.js` | Finds and verifies verses on Arabic Wikisource: search, read the poem page (`{{ترويسة|مؤلف=…}}`, `{{أبيات|…\…}}`), match the letters without diacritics, confirm the poet |
@@ -158,7 +158,7 @@ The visitor page shows the visitor's own first name. When it matches the diction
   - The verse must scan on `meter`, one of the 9 in `METERS`, or the build fails with the line number.
   - Same curation rules as quotes, original wording (no borrowing from known verses), and the same themes and meters as the human pool.
   - Avoid verse-final «long vowel + sukun» (ـينْ، ـادْ): the checker shortens it.
-- Themes (ids): nur, saada, hikma, karam, shajaa, iman, rahma, jamal, izza, sabr, sidq, hayat, salam, hamd. Verses per theme (24 Nov): hamd 5, rahma 6, salam 8, sabr 8, sidq 9, shajaa 9, hayat 10, iman 10, saada 12, jamal 13, nur 13, karam 15, hikma 17, izza 17.
+- Themes (ids): nur, saada, hikma, karam, shajaa, iman, rahma, jamal, izza, sabr, sidq, hayat, salam, hamd. Verses per theme (25 Nov): hamd 5, rahma 6, salam 8, sabr 8, sidq 9, shajaa 9, iman 10, saada 12, nur 13, hayat 14, karam 15, hikma 17, jamal 19, izza 20.
 
 ## Reviewer loop
 
