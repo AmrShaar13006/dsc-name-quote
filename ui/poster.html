@@ -271,9 +271,14 @@ async function frame(src) {
   const f = document.createElement('iframe');
   f.src = src;
   f.setAttribute('aria-hidden', 'true'); f.tabIndex = -1;
-  f.style.cssText = 'position:absolute;left:-9999px;width:420px;height:800px;border:0';
-  document.body.appendChild(f);
-  await new Promise((r) => { f.onload = r; });
+  // مخفي بالقص لا بإزاحة سالبة: في صفحة من اليمين لليسار تمدّ الإزاحةُ الصفحةَ أفقيًا فتظهر فارغة على الجوال
+  f.style.cssText = 'width:420px;height:800px;border:0';
+  const box = document.createElement('div');
+  box.style.cssText = 'position:fixed;top:0;right:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none';
+  box.append(f);
+  const loaded = new Promise((r) => { f.onload = r; });
+  document.body.appendChild(box);
+  await loaded;
   return f.contentWindow;
 }
 

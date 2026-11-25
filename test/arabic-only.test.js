@@ -30,3 +30,7 @@ for (const page of pages) {
 
   test(`${page}: اسم النادي`, () => assert.doesNotMatch(html, /علوم البيانات|\bDSC\b|Claude/));
 }
+
+test('لا إزاحة سالبة كبيرة: تمدّ صفحة RTL أفقيًا فتظهر فارغة على الجوال', () => {
+  for (const page of pages) assert.doesNotMatch(readFileSync(dir + page, 'utf8'), /left:s*-d{3,}px/, page);
+});
