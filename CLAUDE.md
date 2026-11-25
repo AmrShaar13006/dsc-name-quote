@@ -5,6 +5,10 @@ Arabic Language Day celebration on **Wednesday 25 Nov 2026** (held mainly in the
 Amr (club president, Software Engineering student) owns this project. Club friends contribute through the public repo
 https://github.com/AmrShaar13006/dsc-name-quote (MIT, see `CONTRIBUTING.md`).
 Reply in Arabic, to Amr and to contributors. Code identifiers in English; code comments and all UI copy in Arabic.
+**The site is Arabic only** (Amr, 25 Nov): no Latin letter anywhere a visitor can see it (pages, cards, posters, data, download names, 404 page).
+Foreign names are written in Arabic letters (كلود, إم بي سي). No URL is printed on the cards or posters; the QR does that job. Digits are Arabic-Indic.
+`build.js` rejects Latin letters in visible data fields, and `test/arabic-only.test.js` checks the pages.
+The club's Arabic name is **نادي علم البيانات** (not «علوم»).
 
 ## The site: three experiences
 
@@ -38,7 +42,7 @@ Decisions settled with Amr (23 Nov):
   - 10 rounds per game. Machine verses are 4–6 of them, at random, so players can't count the rest.
   - Verses the visitor already saw are avoided next time (stored on the visitor's device).
   - **Both sides are shown without diacritics or punctuation.** The poets' verses are only partly vocalised (as in their source), so diacritics would reveal the source.
-  - The reveal names the model honestly («كتبه نموذج الذكاء الاصطناعي Claude قبل الفعالية»). Human verses get the poet + a link to the poem on Wikisource.
+  - The reveal names the model honestly («كتبه نموذج الذكاء الاصطناعي «كلود»…»). Human verses get the poet + a link to the poem on Wikisource.
   - Zero AI calls at runtime.
   - The page must not claim the machine verses were reviewed by the team until they are (status «معتمد»).
 - Fonts still load from Google Fonts (visitors are online). The Arabic subsets are Gulzar ~200 KB, Amiri ~200 KB, Plex ~130 KB and Qahiri 6 KB. The page itself is ~110 KB with all data inlined.
@@ -194,7 +198,7 @@ Column order does not matter, because the Arabic headers are mapped in `HEADER_A
 - Spawn with `process.execPath`, not `'node'`.
 - `node --test` runs test files **in parallel**, so a test must never write a file another test reads. That is why `npm test` runs `export-review.js` before the tests.
 - Line endings are LF (`.gitattributes`). The CSV reader also handles CRLF and a BOM (Excel exports).
-- Arabic in monospace with letter-spacing breaks the shaping. Keep mono for Latin micro-labels only.
+- Arabic in monospace or with letter-spacing breaks the shaping. The micro-label uses the UI font, without tracking.
 
 ## Brand (DSC design system)
 
@@ -203,7 +207,7 @@ If the «Data Science Club Design System» folder (from Amr) is available, its `
 - **Colours:**
   - Ember `#EB5A33` is a signal only (5–10% of a screen: rules, one highlight, the primary button), never a background.
   - Ink is `#111111`, cream is `#FAF7F2`, and the hairline is `#E3E3E3`.
-- **Shape:** radii are 12 (cards), 8 (controls) and 4 (badges). Use a 4px ember rule on one edge, and exactly one uppercase mono micro-label per card.
+- **Shape:** radii are 12 (cards), 8 (controls) and 4 (badges). Use a 4px ember rule on one edge, and exactly one ember micro-label per card (Arabic, UI font).
 - **Fonts:**
   - Arabic UI: IBM Plex Sans Arabic. This is a flagged substitute, because there is no official Arabic face.
   - The name on the card: see the calligraphy decision above (Gulzar, Qahiri or Aref Ruqaa for now).

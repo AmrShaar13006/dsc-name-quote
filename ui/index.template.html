@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>من اسمه نصيب · نادي علوم البيانات</title>
-<meta name="description" content="اكتب اسمك، ونخبرك بمعناه وجذره، ونختار له بيتًا من الشعر العربي في بطاقة تحفظها. نادي علوم البيانات، جامعة اليمامة، اليوم العالمي للغة العربية.">
+<title>من اسمه نصيب · نادي علم البيانات</title>
+<meta name="description" content="اكتب اسمك، ونخبرك بمعناه وجذره، ونختار له بيتًا من الشعر العربي في بطاقة تحفظها. نادي علم البيانات، جامعة اليمامة، اليوم العالمي للغة العربية.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_SA">
 <meta property="og:title" content="من اسمه نصيب">
@@ -14,9 +14,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='88 10 136 161'%3E%3Cpolygon fill='%23EB5A33' points='175.57,76.08 175.57,48.12 137.68,48.12 137.68,20.15 98.84,20.15 98.84,48.52 136.74,48.52 136.74,76.49 174.64,76.49 174.64,104.42 136.74,104.42 136.74,132.39 98.84,132.39 98.84,160.76 137.68,160.76 137.68,132.79 175.57,132.79 175.57,104.83 213.47,104.83 213.47,104.46 213.47,76.46 213.47,76.08'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Amiri&family=Gulzar&family=Qahiri&family=Aref+Ruqaa:wght@700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Amiri&family=Gulzar&family=Qahiri&family=Aref+Ruqaa:wght@700&display=swap" rel="stylesheet">
 <style>
-/* هوية نادي علوم البيانات: أرضية كريمية وحبر، والجمري إشارة لا سطح (حد علوي، زر أساسي، وسم واحد). */
+/* هوية نادي علم البيانات: أرضية كريمية وحبر، والجمري إشارة لا سطح (حد علوي، زر أساسي، وسم واحد). */
 :root {
   --ground: #FAF7F2;
   --surface: #FFFFFF;
@@ -31,7 +31,6 @@
   --focus: 0 0 0 3px rgba(235, 90, 51, .35);
   --ease: cubic-bezier(.2, .6, .2, 1);
   --font-ui: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -61,10 +60,7 @@ body {
   padding: 28px 16px calc(28px + env(safe-area-inset-bottom));
   display: flex; flex-direction: column; gap: 28px;
 }
-.label {
-  font-family: var(--font-mono); font-weight: 500; font-size: 12px; line-height: 1;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--ember); direction: ltr; text-align: right;
-}
+.label { font-weight: 500; font-size: 14px; line-height: 1.4; color: var(--ember); }
 h1 { margin: 10px 0 10px; font-size: 39px; line-height: 1.2; font-weight: 700; color: var(--ink); }
 .lede { margin: 0; font-size: 17px; color: var(--muted); text-wrap: pretty; }
 
@@ -165,7 +161,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
 <body>
 <main class="app">
   <section id="start" aria-labelledby="title">
-    <div class="label">DSC · Arabic Language Day</div>
+    <div class="label">نادي علم البيانات · يوم اللغة العربية</div>
     <h1 id="title">من اسمه نصيب</h1>
     <p class="lede">اكتب اسمك، ونخبرك بمعناه وجذره، ونختار له بيتًا من الشعر العربي في بطاقة تحفظها.</p>
   </section>
@@ -213,7 +209,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
 
   <footer>
     <a class="cross" href="game.html">جرّب أيضًا: شاعر أم آلة؟ هل تميّز بيت الشاعر من بيت الآلة ←</a>
-    <span>نادي علوم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
+    <span>نادي علم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
   </footer>
 </main>
 
@@ -246,8 +242,6 @@ const STYLES = {
 };
 const UI = "'IBM Plex Sans Arabic', system-ui, sans-serif";
 const VERSE = "'Amiri', serif";
-const MONO = "'JetBrains Mono', ui-monospace, monospace";
-const SITE = /localhost|127\.0\.0\.1/.test(location.hostname) || !location.hostname ? 'dsc-name-quote.vercel.app' : location.hostname;
 
 const state = { r: null, name: '', theme: null, offset: 0, style: 'nastaliq', blob: null };
 
@@ -286,10 +280,6 @@ function wrap(ctx, str, maxW) {
   }
   if (line) lines.push(line);
   return lines;
-}
-function tracked(ctx, str, x, y, spacing) { // للوسم اللاتيني فقط: تباعد الحروف يدويًا
-  ctx.textAlign = 'left'; ctx.direction = 'ltr';
-  for (const ch of str) { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + spacing; }
 }
 function octagram(ctx, cx, cy, side, alpha, lw) { // نجمة ثمانية من مربعين: وحدة النادي المربعة في هيئة عربية
   ctx.save();
@@ -370,16 +360,15 @@ function drawCard(cv, m) {
   let y = top + Math.max(0, (bottom - top - total) / 2);
   for (const b of blocks) { y += b.gap || 0; b.draw(y); y += b.h; }
 
-  // التذييل: شعار النادي واسمه، ووسم واحد بخط أحادي
+  // التذييل: شعار النادي واسمه يمينًا، والمناسبة وتاريخها يسارًا
   ctx.fillStyle = C.line; ctx.fillRect(M, H - M - 128, W - 2 * M, 2);
   const mh = 72, mw = MARK_BOX.w * mh / MARK_BOX.h;
   drawMark(ctx, W - M - mw, H - M - mh - 4, mh);
   const tx = W - M - mw - 24;
-  text(ctx, `700 30px ${UI}`, C.ink, 'right'); ctx.fillText('نادي علوم البيانات', tx, H - M - 52);
+  text(ctx, `700 30px ${UI}`, C.ink, 'right'); ctx.fillText('نادي علم البيانات', tx, H - M - 52);
   text(ctx, `400 26px ${UI}`, C.muted, 'right'); ctx.fillText('جامعة اليمامة', tx, H - M - 12);
-  ctx.font = `500 21px ${MONO}`; ctx.fillStyle = C.ember;
-  tracked(ctx, 'ARABIC LANGUAGE DAY · 25 NOV 2026', M, H - M - 52, 2.6);
-  text(ctx, `400 24px ${UI}`, C.muted, 'left', 'ltr'); ctx.fillText(SITE, M, H - M - 12);
+  text(ctx, `500 30px ${UI}`, C.ember, 'left'); ctx.fillText('يوم اللغة العربية', M, H - M - 52);
+  text(ctx, `400 26px ${UI}`, C.muted, 'left'); ctx.fillText('٢٥ نوفمبر ٢٠٢٦', M, H - M - 12);
 }
 
 function drawName(ctx, name, st, cy) {
@@ -407,7 +396,6 @@ function loadFonts(style, name, verse) {
     document.fonts.load(`400 100px 'IBM Plex Sans Arabic'`, SAMPLE),
     document.fonts.load(`500 100px 'IBM Plex Sans Arabic'`, SAMPLE),
     document.fonts.load(`700 100px 'IBM Plex Sans Arabic'`, SAMPLE),
-    document.fonts.load(`500 21px 'JetBrains Mono'`, 'ARABIC'),
   ]).then(() => true, () => true);
   // لا ننتظر أكثر من 6 ثوان: إن تعثّر الاتصال نرسم بالخط الاحتياطي ثم نعيد الرسم إذا وصل الخط
   return Promise.race([all, new Promise((r) => setTimeout(() => r(false), 6000))]);

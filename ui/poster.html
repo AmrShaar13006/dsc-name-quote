@@ -10,7 +10,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Gulzar&family=Amiri:wght@400;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Gulzar&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
 body { margin: 0; background: #E9E6E0; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; padding: 24px 16px 48px; display: grid; gap: 48px; justify-items: center; }
 section { display: grid; gap: 20px; justify-items: center; width: 100%; }
@@ -26,33 +26,31 @@ button:hover { border-color: #EB5A33; }
 <section id="name" aria-labelledby="name-h">
   <h2 id="name-h">من اسمه نصيب</h2>
   <div class="row">
-    <button type="button" data-dl="name-screen">تنزيل شريحة الشاشة (16:9)</button>
-    <button type="button" data-dl="name-print">تنزيل ملصق الطباعة (A4)</button>
+    <button type="button" data-dl="name-screen">تنزيل شريحة الشاشة (عرضية)</button>
+    <button type="button" data-dl="name-print">تنزيل ملصق الطباعة</button>
   </div>
   <canvas id="name-screen" aria-label="شريحة الشاشة: من اسمه نصيب"></canvas>
-  <canvas id="name-print" aria-label="ملصق الطباعة A4: من اسمه نصيب"></canvas>
+  <canvas id="name-print" aria-label="ملصق الطباعة: من اسمه نصيب"></canvas>
 </section>
 <section id="game" aria-labelledby="game-h">
   <h2 id="game-h">شاعر أم آلة؟</h2>
   <div class="row">
-    <button type="button" data-dl="game-screen">تنزيل شريحة الشاشة (16:9)</button>
-    <button type="button" data-dl="game-print">تنزيل ملصق الطباعة (A4)</button>
+    <button type="button" data-dl="game-screen">تنزيل شريحة الشاشة (عرضية)</button>
+    <button type="button" data-dl="game-print">تنزيل ملصق الطباعة</button>
   </div>
   <canvas id="game-screen" aria-label="شريحة الشاشة: شاعر أم آلة؟"></canvas>
-  <canvas id="game-print" aria-label="ملصق الطباعة A4: شاعر أم آلة؟"></canvas>
+  <canvas id="game-print" aria-label="ملصق الطباعة: شاعر أم آلة؟"></canvas>
 </section>
 <script>
 // ملصقات الموقع: لكل تجربة شريحة للشاشة (1920×1080 بمقياس 2) وملصق طباعة A4 (1240×1754 بمقياس 2 = 300 نقطة/بوصة)
-const SITE = 'dsc-name-quote.vercel.app';
 const UI = "'IBM Plex Sans Arabic', system-ui, sans-serif";
-const MONO = "'JetBrains Mono', ui-monospace, monospace";
 const CAL = "'Gulzar', 'IBM Plex Sans Arabic', serif";
 const AMIRI = "'Amiri', serif";
 const C = { ink: '#111111', cream: '#FAF7F2', sand: '#D8CFC0', muted: '#6B6B6B', line: '#E3E3E3', ember: '#EB5A33', teal: '#127868', white: '#FFFFFF' };
-const LABEL = 'DSC · ARABIC LANGUAGE DAY · 25 NOV 2026';
+const LABEL = 'نادي علم البيانات · يوم اللغة العربية', DATE = '٢٥ نوفمبر ٢٠٢٦';
 const AR_DIGITS = ['١', '٢', '٣'];
 const QR_NOTE = 'يعمل على أي جوال، بلا تطبيق';
-const CLUB = 'نادي علوم البيانات', UNI = 'جامعة اليمامة';
+const CLUB = 'نادي علم البيانات', UNI = 'جامعة اليمامة';
 // بيت الآلة الذي يظهر في ملصق اللعبة (من data/machine.csv). لا يُكشف مصدره في الملصق.
 const GAME_VERSE = 'm01';
 
@@ -61,15 +59,15 @@ const POSTERS = {
     title: 'من اسمه نصيب', titleFont: CAL, titleWeight: 400,
     lede: 'اكتب اسمك، ونخبرك بمعناه وجذره، ونختار له بيتًا من الشعر العربي في بطاقة تحفظها.',
     steps: ['امسح الرمز بكاميرا جوالك', 'اكتب اسمك الأول', 'احفظ بطاقتك وشاركها'],
-    site: SITE, caption: 'مثال لبطاقة من الموقع', qr: 'qr.svg',
-    files: { screen: 'dsc-poster-screen-16x9.png', print: 'dsc-poster-a4.png' },
+    caption: 'مثال لبطاقة من الموقع', qr: 'qr.svg',
+    files: { screen: 'من-اسمه-نصيب-شاشة.png', print: 'من-اسمه-نصيب-طباعة.png' },
   },
   game: {
     title: 'شاعر أم آلة؟', titleFont: AMIRI, titleWeight: 700,
     lede: 'عشرة أبيات: بعضها لشعراء عرب عبر العصور، وبعضها كتبه نموذج ذكاء اصطناعي. هل تميّز بينها؟',
     steps: ['امسح الرمز بكاميرا جوالك', 'اختر لكل بيت: شاعر أم آلة', 'احفظ نتيجتك وشاركها'],
-    site: SITE + '/game.html', caption: 'جولة من اللعبة', qr: 'game-qr.svg',
-    files: { screen: 'dsc-game-poster-screen-16x9.png', print: 'dsc-game-poster-a4.png' },
+    caption: 'جولة من اللعبة', qr: 'game-qr.svg',
+    files: { screen: 'شاعر-أم-آلة-شاشة.png', print: 'شاعر-أم-آلة-طباعة.png' },
   },
 };
 
@@ -95,8 +93,6 @@ function balance(ctx, str, maxW) {
   while (hi - lo > 4) { const mid = (lo + hi) / 2; if (wrap(ctx, str, mid).length > n) lo = mid; else hi = mid; }
   return wrap(ctx, str, hi);
 }
-function trackedWidth(ctx, str, sp) { let w = 0; for (const ch of str) w += ctx.measureText(ch).width + sp; return w - sp; }
-function tracked(ctx, str, x, y, sp) { ctx.textAlign = 'left'; ctx.direction = 'ltr'; for (const ch of str) { ctx.fillText(ch, x, y); x += ctx.measureText(ch).width + sp; } }
 function grid(ctx, W, H, step, color) {
   ctx.strokeStyle = color; ctx.lineWidth = 1.2; ctx.beginPath();
   for (let x = step; x < W; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, H); }
@@ -110,12 +106,6 @@ function fitFont(ctx, str, family, weight, start, maxW) {
   const w = ctx.measureText(str).width; if (w > maxW) s = Math.floor(s * maxW / w);
   return s;
 }
-// الرابط بخط أحادي متباعد، يصغر إن ضاق مكانه
-function site(ctx, str, x, y, start, color, maxW) {
-  let s = start; ctx.font = `500 ${s}px ${MONO}`;
-  const w = trackedWidth(ctx, str, 1); if (w > maxW) { s = Math.floor(s * maxW / w); ctx.font = `500 ${s}px ${MONO}`; }
-  ctx.fillStyle = color; tracked(ctx, str, x, y, 1);
-}
 function card(ctx, im, x, y, w, shadow) {
   const h = w * 16 / 9;
   ctx.save();
@@ -125,14 +115,12 @@ function card(ctx, im, x, y, w, shadow) {
   ctx.save(); ctx.beginPath(); ctx.roundRect(x, y, w, h, 14); ctx.clip(); ctx.drawImage(im, x, y, w, h); ctx.restore();
   return h;
 }
-// التذييل: الشعار واسم النادي يمينًا، والرابط يسارًا في ما بقي من المكان
-function footer(ctx, P, { L, R, y, mh, big, small, url, color, sub }) {
+// التذييل: الشعار واسم النادي يمينًا، والتاريخ يسارًا
+function footer(ctx, { L, R, y, mh, big, small, color, sub }) {
   const mw = drawMark(ctx, R - MB.w * mh / MB.h, y, mh, color);
   text(ctx, `700 ${big}px ${UI}`, color, 'right'); ctx.fillText(CLUB, R - mw - 22, y + mh * 0.58);
-  const clubW = ctx.measureText(CLUB).width;
   text(ctx, `400 ${small}px ${UI}`, sub, 'right'); ctx.fillText(UNI, R - mw - 22, y + mh * 1.2);
-  const left = R - mw - 22 - Math.max(clubW, ctx.measureText(UNI).width);
-  site(ctx, P.site, L, y + mh * 0.88, url, sub === C.sand ? C.sand : C.ink, left - L - 56);
+  text(ctx, `500 ${big}px ${UI}`, sub, 'left'); ctx.fillText(DATE, L, y + mh * 0.88);
 }
 
 // ---------- شريحة الشاشة 16:9 (أرضية حبرية تناسب قاعة مظلمة) ----------
@@ -146,8 +134,7 @@ function drawScreen(cv, P, qr, sample) {
 
   // العمود الأيمن: الوسم والعنوان والتعريف والخطوات
   const R = W - 104, colW = 600;
-  ctx.font = `500 22px ${MONO}`; ctx.fillStyle = C.ember;
-  tracked(ctx, LABEL, R - trackedWidth(ctx, LABEL, 2.6), 196, 2.6);
+  text(ctx, `500 28px ${UI}`, C.ember, 'right'); ctx.fillText(LABEL, R, 196);
   const ts = fitFont(ctx, P.title, P.titleFont, P.titleWeight, 190, colW);
   text(ctx, `${P.titleWeight} ${ts}px ${P.titleFont}`, C.white, 'right');
   const m = ctx.measureText(P.title); // موسَّط عموديًا حول 330
@@ -178,7 +165,7 @@ function drawScreen(cv, P, qr, sample) {
 
   // التذييل
   ctx.fillStyle = 'rgba(255,255,255,.14)'; ctx.fillRect(104, H - 140, W - 208, 1.5);
-  footer(ctx, P, { L: 104, R, y: H - 102, mh: 52, big: 30, small: 24, url: 30, color: C.white, sub: C.sand });
+  footer(ctx, { L: 104, R, y: H - 102, mh: 52, big: 30, small: 24, color: C.white, sub: C.sand });
 }
 
 // ---------- ملصق الطباعة A4 (أرضية كريمية) ----------
@@ -191,8 +178,7 @@ function drawPrint(cv, P, qr, sample) {
   ctx.fillStyle = C.ember; ctx.fillRect(0, 0, W, 16);
   const M = 96;
 
-  ctx.font = `500 22px ${MONO}`; ctx.fillStyle = C.ember;
-  tracked(ctx, LABEL, (W - trackedWidth(ctx, LABEL, 2.6)) / 2, 150, 2.6);
+  text(ctx, `500 30px ${UI}`, C.ember); ctx.fillText(LABEL, W / 2, 150);
   // العنوان: نقيس حدوده الفعلية (النستعليق ينزل كثيرًا تحت السطر) ونبدأ ما بعده من أسفله
   const ts = fitFont(ctx, P.title, P.titleFont, P.titleWeight, 210, W - 2 * M);
   text(ctx, `${P.titleWeight} ${ts}px ${P.titleFont}`, C.ink);
@@ -229,7 +215,7 @@ function drawPrint(cv, P, qr, sample) {
 
   // التذييل
   ctx.fillStyle = C.line; ctx.fillRect(M, H - 170, W - 2 * M, 2);
-  footer(ctx, P, { L: M, R: W - M, y: H - 132, mh: 64, big: 32, small: 26, url: 28, color: C.ink, sub: C.muted });
+  footer(ctx, { L: M, R: W - M, y: H - 132, mh: 64, big: 32, small: 26, color: C.ink, sub: C.muted });
 }
 
 // ---------- شاشة جولة من «شاعر أم آلة؟» كما تبدو على الجوال (9:16) ----------
@@ -241,9 +227,7 @@ function gameShot(v) {
   ctx.fillStyle = C.cream; ctx.fillRect(0, 0, W, H);
   ctx.fillStyle = C.ember; ctx.fillRect(0, 0, W, 4);
 
-  const lab = 'DSC · ARABIC LANGUAGE DAY';
-  ctx.font = `500 11px ${MONO}`; ctx.fillStyle = C.ember;
-  tracked(ctx, lab, R - trackedWidth(ctx, lab, 1.3), 42, 1.3);
+  text(ctx, `500 14px ${UI}`, C.ember, 'right'); ctx.fillText(LABEL, R, 42);
   text(ctx, `700 34px ${UI}`, C.ink, 'right'); ctx.fillText('شاعر أم آلة؟', R, 92);
   text(ctx, `400 15px ${UI}`, C.muted, 'right');
   const lede = wrap(ctx, POSTERS.game.lede, cw);
@@ -277,7 +261,7 @@ function gameShot(v) {
   });
 
   ctx.fillStyle = C.line; ctx.fillRect(L, H - 64, cw, 1);
-  text(ctx, `400 13px ${UI}`, C.muted, 'right'); ctx.fillText('نادي علوم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية', R, H - 34);
+  text(ctx, `400 13px ${UI}`, C.muted, 'right'); ctx.fillText('نادي علم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية', R, H - 34);
   return cv;
 }
 
@@ -320,8 +304,7 @@ const fontsReady = Promise.all([
   document.fonts.load(`400 100px 'Gulzar'`, POSTERS.name.title),
   document.fonts.load(`700 100px 'Amiri'`, POSTERS.game.title),
   ...[400, 500, 700].map((w) => document.fonts.load(`${w} 40px 'IBM Plex Sans Arabic'`,
-    Object.values(POSTERS).map((P) => P.lede + P.steps.join(' ') + P.caption).join(' ') + CLUB + UNI + QR_NOTE + '١٢٣ من شاعر آلة')),
-  document.fonts.load(`500 22px 'JetBrains Mono'`, LABEL + POSTERS.game.site),
+    Object.values(POSTERS).map((P) => P.lede + P.steps.join(' ') + P.caption).join(' ') + CLUB + UNI + QR_NOTE + LABEL + DATE + '١٢٣ من شاعر آلة')),
 ]);
 
 const ready = {};
@@ -334,7 +317,7 @@ for (const [key, sample] of [['name', sampleCard], ['game', gameSample]]) {
     drawPrint(document.getElementById(`${key}-print`), P, qr, im);
   })();
   ready[key].catch((e) => {
-    const p = document.createElement('p'); p.className = 'err'; p.textContent = `تعذّر رسم الملصق: ${e.message}`;
+    const p = document.createElement('p'); p.className = 'err'; console.error(e); p.textContent = 'تعذّر رسم الملصق. أعد تحميل الصفحة.';
     document.getElementById(key).append(p);
   });
 }

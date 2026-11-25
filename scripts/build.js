@@ -8,6 +8,7 @@ import { METERS, metersOf } from '../src/prosody.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 // صفحات القصائد في ويكي مصدر: المصدر الوحيد للأبيات (انظر scripts/wikisource.js)
+const LATIN = /[A-Za-zÀ-ÖØ-öø-ɏ]+/;
 export const WIKI = 'https://ar.wikisource.org/wiki/';
 
 // قارئ CSV يدعم الحقول بين علامتي تنصيص (كما يصدّرها Excel والجدول)
@@ -302,6 +303,18 @@ export function loadData({ namesFile = 'names.csv', quotesFile = 'quotes.csv', b
   const mids = new Set();
   for (const m of allMachine) { if (mids.has(m.id)) errors.push(`machine.csv: المعرّف ${m.id} مكرر`); mids.add(m.id); }
   const machine = allMachine.filter((m) => m.status !== 'مستبعد').map(({ status, note, ...m }) => m);
+
+  // الموقع عربي كله: لا حرف لاتيني في أي نص يراه الزائر (الأسماء الأجنبية تُكتب بحروف عربية)
+  const PERSON = ['name', 'full_name', 'era', 'field', 'bio', 'contribution', 'image_credit', 'image_license'];
+  const VISIBLE = [
+    ['themes.csv', themes, ['label']], [namesFile, names, ['name', 'meaning', 'root']], ['roots.csv', roots, ['root', 'gloss']], ['divine.csv', divine, ['name']],
+    [quotesFile, quotes, ['first', 'second', 'author']], [machineFile, machine, ['first', 'second', 'meter']], [attributesFile, attributes, ['name', 'attribute']],
+    [figuresFile, figures, PERSON], [celebritiesFile, celebrities, PERSON],
+  ];
+  for (const [file, list, fields] of VISIBLE) for (const e of list) for (const f of fields) {
+    const m = LATIN.exec(e[f] || '');
+    if (m) errors.push(`${file} (${e.id || e.name || e.root || e.label}): حرف لاتيني «${m[0]}» في ${f}. اكتبه بحروف عربية`);
+  }
 
   return { data: { themes, names, roots, divine, quotes, blocked, machine, attributes, figures, celebrities }, allQuotes, allMachine, allAttributes, allFigures, allCelebrities, errors, warnings };
 }

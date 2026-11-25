@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>شخصيات مشهورة تحمل اسمك · نادي علوم البيانات</title>
-<meta name="description" content="شخصيات مشهورة تحمل اسمك: نبذة موثّقة عن كل واحدة منها ورابط مصدرها. نادي علوم البيانات، جامعة اليمامة، اليوم العالمي للغة العربية.">
+<title>شخصيات مشهورة تحمل اسمك · نادي علم البيانات</title>
+<meta name="description" content="شخصيات مشهورة تحمل اسمك: نبذة موثّقة عن كل واحدة منها ورابط مصدرها. نادي علم البيانات، جامعة اليمامة، اليوم العالمي للغة العربية.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ar_SA">
 <meta property="og:title" content="شخصيات مشهورة تحمل اسمك">
@@ -14,16 +14,15 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='88 10 136 161'%3E%3Cpolygon fill='%23EB5A33' points='175.57,76.08 175.57,48.12 137.68,48.12 137.68,20.15 98.84,20.15 98.84,48.52 136.74,48.52 136.74,76.49 174.64,76.49 174.64,104.42 136.74,104.42 136.74,132.39 98.84,132.39 98.84,160.76 137.68,160.76 137.68,132.79 175.57,132.79 175.57,104.83 213.47,104.83 213.47,104.46 213.47,76.46 213.47,76.08'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* هوية نادي علوم البيانات، كما في بقية صفحات الموقع */
+/* هوية نادي علم البيانات، كما في بقية صفحات الموقع */
 :root {
   --ground: #FAF7F2; --surface: #FFFFFF; --ink: #111111; --text: #1A1A1A; --muted: #6B6B6B; --line: #E3E3E3;
   --ember: #EB5A33; --ember-dark: #C34521; --ember-wash: #FDF1EC;
   --shadow-card: 0 6px 20px rgba(17, 17, 17, .10); --focus: 0 0 0 3px rgba(235, 90, 51, .35);
   --ease: cubic-bezier(.2, .6, .2, 1);
   --font-ui: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -43,7 +42,7 @@ html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--ground); color: var(--text); font-family: var(--font-ui); font-size: 16px; line-height: 1.6; border-top: 4px solid var(--ember); }
 [hidden] { display: none !important; }
 .app { max-width: 480px; margin: 0 auto; min-height: 100svh; padding: 28px 16px calc(28px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 24px; }
-.label { font-family: var(--font-mono); font-weight: 500; font-size: 12px; line-height: 1; letter-spacing: .12em; text-transform: uppercase; color: var(--ember); direction: ltr; text-align: right; }
+.label { font-weight: 500; font-size: 14px; line-height: 1.4; color: var(--ember); }
 h1 { margin: 10px 0 10px; font-size: 32px; line-height: 1.25; font-weight: 700; color: var(--ink); }
 .lede { margin: 0; font-size: 17px; color: var(--muted); text-wrap: pretty; }
 .hint { margin: 0; font-size: 14px; color: var(--muted); }
@@ -94,7 +93,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
 <body>
 <main class="app">
   <section id="start" aria-labelledby="title">
-    <div class="label">DSC · Arabic Language Day</div>
+    <div class="label">نادي علم البيانات · يوم اللغة العربية</div>
     <h1 id="title">شخصيات مشهورة تحمل اسمك</h1>
     <p class="lede">اكتب اسمك، أو ارجع إلى صفحة «شخصيات تاريخية»، لنعرض لك شخصيات مشهورة موثّقة تحمل اسمك نفسه.</p>
   </section>
@@ -113,7 +112,7 @@ footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line);
 
   <footer>
     <a class="cross" href="./">من اسمه نصيب: اكتب اسمك وخذ بيتًا يليق به ←</a>
-    <span>نادي علوم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
+    <span>نادي علم البيانات · جامعة اليمامة · اليوم العالمي للغة العربية</span>
   </footer>
 </main>
 
@@ -123,6 +122,7 @@ const DATA = /*__DATA__*/;
 const E = createEngine(DATA);
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const txt = (s) => esc(s).replace(/[0-9]/g, (d) => '٠١٢٣٤٥٦٧٨٩'[d]); // نص ظاهر بأرقام عربية
 
 function renderCelebrities(canonical) {
   const celebrities = E.celebritiesFor({ canonical });
@@ -139,10 +139,10 @@ function renderCelebrities(canonical) {
         ${f.image ? `<img src="${esc(f.image)}" alt="" loading="lazy">` : `<span class="q" aria-hidden="true">؟</span>`}
       </div>
       <div class="figure-body">
-        <h2>${esc(f.full_name)}</h2>
-        ${f.field ? `<div class="figure-era">${esc(f.field)}</div>` : ''}
-        <p class="figure-bio">${esc(f.bio)}</p>
-        ${f.contribution ? `<p class="figure-bio"><strong>أبرز إسهامه:</strong> ${esc(f.contribution)}</p>` : ''}
+        <h2>${txt(f.full_name)}</h2>
+        ${f.field ? `<div class="figure-era">${txt(f.field)}</div>` : ''}
+        <p class="figure-bio">${txt(f.bio)}</p>
+        ${f.contribution ? `<p class="figure-bio"><strong>أبرز إسهامه:</strong> ${txt(f.contribution)}</p>` : ''}
         <div class="figure-meta"><a href="${esc(f.url)}" target="_blank" rel="noopener">المصدر</a></div>
         ${f.image && f.image_credit ? `<div class="credit">${esc(f.image_credit)}${f.image_license ? ' · ' + esc(f.image_license) : ''}</div>` : ''}
       </div>

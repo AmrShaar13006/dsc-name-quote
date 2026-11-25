@@ -6,9 +6,9 @@
 <title>اختبار من اسمه نصيب</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Aref+Ruqaa:wght@400;700&family=Reem+Kufi:wght@500;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 <style>
-/* لوحة نادي علوم البيانات: كريمي/حبري، والجمري إشارة لا سطح. تخطيط: لوحة اختبار اسم واحد ثم اختبار دفعة. */
+/* لوحة نادي علم البيانات: كريمي/حبري، والجمري إشارة لا سطح. تخطيط: لوحة اختبار اسم واحد ثم اختبار دفعة. */
 :root {
   --ground: #FAF7F2;
   --surface: #FFFFFF;
@@ -26,7 +26,6 @@
   --s-latin: #92908A;
   --focus: 0 0 0 3px rgba(235, 90, 51, .35);
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -47,7 +46,7 @@
 html, body { margin: 0; }
 body { background: var(--ground); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 32px 20px 64px; display: grid; gap: 40px; }
-.label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ember); direction: ltr; text-align: right; }
+.label { font-size: 14px; font-weight: 500; color: var(--ember); }
 h1 { margin: 4px 0 6px; font-size: 31px; line-height: 1.2; color: var(--ink); text-wrap: balance; font-weight: 700; }
 h2 { margin: 0; font-size: 20px; color: var(--ink); font-weight: 700; }
 .lede { margin: 0; color: var(--muted); max-width: 60ch; }
@@ -96,7 +95,7 @@ input:focus-visible, textarea:focus-visible, button:focus-visible { outline: non
   background-image: linear-gradient(rgba(17,17,17,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(17,17,17,.05) 1px, transparent 1px);
   background-size: 32px 32px;
 }
-.card .c-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; color: #EB5A33; direction: ltr; }
+.card .c-label { font-size: 13px; font-weight: 500; color: #EB5A33; }
 .card .c-name { font-size: 64px; line-height: 1.25; margin: 6px 0 0; overflow-wrap: anywhere; }
 .card .c-meaning { font-size: 17px; color: #1A1A1A; margin: 0 auto; max-width: 34ch; }
 .card .c-quote { align-self: center; font-family: 'Amiri', serif; font-size: 23px; line-height: 1.8; margin: 0; color: #111; display: grid; gap: 2px; }
@@ -140,7 +139,7 @@ footer { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; g
 <body>
 <main class="wrap">
   <header>
-    <div class="label">DSC · Arabic Language Day · Test bench</div>
+    <div class="label">نادي علم البيانات · يوم اللغة العربية · صفحة الاختبار</div>
     <h1>اختبار «من اسمه نصيب»</h1>
     <p class="lede">اكتب اسمًا لترى كيف يقرؤه المحرك: من أين جاء معناه، وجذره، وموضوعه، والبطاقة التي سيأخذها الزائر.</p>
   </header>
@@ -165,7 +164,7 @@ footer { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; g
         <button class="chip" type="button" data-font="naskh" aria-pressed="false">نسخ</button>
       </div>
       <article class="card" id="card" aria-live="polite">
-        <div class="c-label">DATA SCIENCE CLUB · YU</div>
+        <div class="c-label">نادي علم البيانات · جامعة اليمامة</div>
         <div>
           <p class="c-name" id="c-name"></p>
           <p class="c-meaning" id="c-meaning"></p>
@@ -183,7 +182,7 @@ footer { color: var(--muted); font-size: 13px; display: flex; flex-wrap: wrap; g
 
   <section class="panel" aria-label="اختبار دفعة">
     <div>
-      <div class="label">Batch test</div>
+      <div class="label">اختبار دفعة</div>
       <h2>اختبار قائمة أسماء</h2>
     </div>
     <div class="batch">
@@ -299,7 +298,7 @@ function renderCard() {
     + `<span class="c-attr">${esc(q.author)} · <a href="${esc(q.url)}" target="_blank" rel="noopener">ويكي مصدر</a></span>`;
   $('c-theme').textContent = themeLabel(state.theme);
   $('another').hidden = n < 2;
-  $('q-count').textContent = `${ar(n)} أبيات في «${themeLabel(state.theme)}» · البيت ${q.id}`;
+  $('q-count').textContent = `${ar(n)} أبيات في «${themeLabel(state.theme)}» · البيت ${ar(q.id.slice(1))}`;
 }
 
 // أحداث الاسم الواحد
@@ -324,7 +323,7 @@ document.addEventListener('click', (e) => {
   if (ex) { $('name').value = ex.dataset.example; resolve(ex.dataset.example); }
 });
 
-const EXAMPLES = ['تركي', 'نورالدين', 'ضيف الله', 'مؤمن', 'مساعد', 'ريناد', 'مايكل', 'Sara'];
+const EXAMPLES = ['تركي', 'نورالدين', 'ضيف الله', 'مؤمن', 'مساعد', 'ريناد', 'مايكل'];
 $('examples').innerHTML = EXAMPLES.map((n) => `<button type="button" class="chip" data-example="${esc(n)}">${esc(n)}</button>`).join('');
 
 // اختبار الدفعة
@@ -359,8 +358,8 @@ function runBatch() {
 $('run').addEventListener('click', runBatch);
 $('rows').addEventListener('click', () => window.scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
 
-$('batch-in').value = ['محمد', 'عبدالرحمن', 'تركي', 'متعب', 'مشاري', 'الجوهرة', 'لولوه', 'هيا', 'ريناد', 'ضيف الله', 'نور الدين', 'منار', 'إشراق', 'مؤمن', 'عزام', 'مساعد', 'هديل', 'روان', 'نزار', 'مايكل', 'Sara'].join('\n');
-$('foot').innerHTML = `<span>القاموس: ${ar(DATA.names.length)} اسمًا</span><span>جدول الجذور: ${ar(DATA.roots.length)} جذرًا</span><span>المواضيع: ${ar(DATA.themes.length)}</span><span>الأبيات: ${ar(DATA.quotes.length)} من ويكي مصدر</span><span>نادي علوم البيانات · جامعة اليمامة</span>`;
+$('batch-in').value = ['محمد', 'عبدالرحمن', 'تركي', 'متعب', 'مشاري', 'الجوهرة', 'لولوه', 'هيا', 'ريناد', 'ضيف الله', 'نور الدين', 'منار', 'إشراق', 'مؤمن', 'عزام', 'مساعد', 'هديل', 'روان', 'نزار', 'مايكل'].join('\n');
+$('foot').innerHTML = `<span>القاموس: ${ar(DATA.names.length)} اسمًا</span><span>جدول الجذور: ${ar(DATA.roots.length)} جذرًا</span><span>المواضيع: ${ar(DATA.themes.length)}</span><span>الأبيات: ${ar(DATA.quotes.length)} من ويكي مصدر</span><span>نادي علم البيانات · جامعة اليمامة</span>`;
 
 resolve($('name').value);
 runBatch();
